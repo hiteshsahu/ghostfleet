@@ -1,0 +1,69 @@
+# ClusterLoader2 config: GPU-pod density test for the kwok cluster.
+# Creates deployments of GPU-requesting pods across namespaces, measures
+# scheduling throughput + API responsiveness.
+#
+# Tunables (override with --testoverrides or edit here):
+#   NAMESPACES x DEPLOYMENTS_PER_NS x PODS_PER_DEPLOYMENT = total pods
+{{$NAMESPACES := DefaultParam .NAMESPACES 10}}
+{{$DEPLOYMENTS_PER_NS := DefaultParam .DEPLOYMENTS_PER_NS 10}}
+{{$PODS_PER_DEPLOYMENT := DefaultParam .PODS_PER_DEPLOYMENT 40}}
+
+name: kwok-gpu-density
+namespace:
+  number: {{$NAMESPACES}}
+tuningSets:
+- name: Uniform100qps
+  qpsLoad:
+    qps: 100
+steps:
+- name: Start measurements
+  measurements:
+  - Identifier: APIResponsiveness
+    Method: APIResponsivenessPrometheus
+    Params:
+      action: start
+  - Identifier: SchedulingThroughput
+    Method: SchedulingThroughput
+    Params:
+      action: start
+      labelSelector: group = gpu-density
+- name: Create GPU deployments
+  phases:
+  - namespaceRange:
+      min: 1
+      max: {{$NAMESPACES}}
+    replicasPerNamespace: {{$DEPLOYMENTS_PER_NS}}
+    tuningSet: Uniform100qps
+    objectBundle:
+    - basename: gpu-dep
+      objectTemplatePath: gpu-deployment.yaml
+      templateFillMap:
+        Replicas: {{$PODS_PER_DEPLOYMENT}}
+- name: Wait for pods running
+  measurements:
+  - Identifier: WaitForRunningPods
+    Method: WaitForRunningPods
+    Params:
+      desiredPodCount: {{MultiplyInt $NAMESPACES $DEPLOYMENTS_PER_NS $PODS_PER_DEPLOYMENT}}
+      labelSelector: group = gpu-density
+      timeout: 30m
+- name: Gather measurements
+  measurements:
+  - Identifier: SchedulingThroughput
+    Method: SchedulingThroughput
+    Params:
+      action: gather
+  - Identifier: APIResponsiveness
+    Method: APIResponsivenessPrometheus
+    Params:
+      action: gather
+- name: Delete deployments
+  phases:
+  - namespaceRange:
+      min: 1
+      max: {{$NAMESPACES}}
+    replicasPerNamespace: 0
+    tuningSet: Uniform100qps
+    objectBundle:
+    - basename: gpu-dep
+      objectTemplatePath: gpu-deployment.yaml

@@ -1,0 +1,17 @@
+# Naked-pod shape used by scripts/05-churn.sh (via envsubst).
+# Vars: $NAME, $NS, $TAG
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ${NAME}
+  namespace: ${NS}
+  labels: { batch: "${TAG}", app: churn }
+spec:
+  tolerations:
+  - { key: kwok.x-k8s.io/node, operator: Exists, effect: NoSchedule }
+  nodeSelector: { type: kwok }
+  containers:
+  - name: c
+    image: fake/busybox
+    resources:
+      requests: { cpu: 100m, memory: 128Mi }

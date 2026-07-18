@@ -1,0 +1,31 @@
+# GPU training-job shape used by scripts/03-gpu-workload.sh (via envsubst).
+# Vars: $REPLICAS, $GPUS_PER_POD, $NS
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fake-training-job
+  namespace: ${NS}
+spec:
+  replicas: ${REPLICAS}
+  selector:
+    matchLabels: { app: fake-training-job }
+  template:
+    metadata:
+      labels: { app: fake-training-job }
+    spec:
+      tolerations:
+      - key: kwok.x-k8s.io/node
+        operator: Exists
+        effect: NoSchedule
+      nodeSelector:
+        type: kwok
+      containers:
+      - name: trainer
+        image: fake/pytorch:sim
+        resources:
+          requests:
+            cpu: "8"
+            memory: 32Gi
+            nvidia.com/gpu: "${GPUS_PER_POD}"
+          limits:
+            nvidia.com/gpu: "${GPUS_PER_POD}"

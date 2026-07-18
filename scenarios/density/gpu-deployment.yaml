@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.Name}}
+  labels:
+    group: gpu-density
+spec:
+  replicas: {{.Replicas}}
+  selector:
+    matchLabels:
+      name: {{.Name}}
+  template:
+    metadata:
+      labels:
+        name: {{.Name}}
+        group: gpu-density
+    spec:
+      tolerations:
+      - key: kwok.x-k8s.io/node
+        operator: Exists
+        effect: NoSchedule
+      nodeSelector:
+        type: kwok
+      containers:
+      - name: trainer
+        image: fake/pytorch:sim
+        resources:
+          requests:
+            cpu: "4"
+            memory: 16Gi
+            nvidia.com/gpu: "1"
+          limits:
+            nvidia.com/gpu: "1"
