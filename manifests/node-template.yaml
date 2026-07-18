@@ -1,0 +1,25 @@
+# The fake DGX-style node shape used by scripts/02-scale-nodes.sh (documented
+# reference copy — the script generates these with unique names/zones).
+apiVersion: v1
+kind: Node
+metadata:
+  name: gpu-node-0000
+  annotations:
+    kwok.x-k8s.io/node: fake        # kwok controller manages lifecycle/heartbeats
+    node.alpha.kubernetes.io/ttl: "0"
+  labels:
+    type: kwok
+    kubernetes.io/role: agent
+    node.kubernetes.io/instance-type: dgx-sim.8xgpu
+    nvidia.com/gpu.present: "true"
+    topology.kubernetes.io/zone: zone-0
+spec:
+  taints:
+  - key: kwok.x-k8s.io/node          # keeps real workloads off fake nodes
+    value: fake
+    effect: NoSchedule
+status:
+  allocatable: { cpu: "96", memory: 1Ti, nvidia.com/gpu: "8", pods: "256" }
+  capacity:    { cpu: "96", memory: 1Ti, nvidia.com/gpu: "8", pods: "256" }
+  nodeInfo:
+    kubeletVersion: fake
