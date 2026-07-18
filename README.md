@@ -48,13 +48,20 @@ kubelet, no containers, no real GPUs.
 Docker or Podman running, kubectl, jq, go (for CL2). 8GB+ RAM free.
 
 
-CLI 
+### Go CLI 
+
+Start by cloning the repo and running the `go` script in the root directory. It wraps the commands below, but you can also run them directly.
 
 ```bash
 # Bootstrap GhostFleet
 ./go setup                 # Install dependencies and create the KWOK cluster + Prometheus
 ./go check_tools           # verifies the tool are installed
 
+```
+
+Start the fleet, load it with pods, and snapshot the metrics.
+
+```bash
 # Build the fleet
 ./go nodes 1000            # creates 1,000 fake GPU nodes (8x nvidia.com/gpu each)
 
@@ -66,7 +73,11 @@ CLI
 
 # Stir the seas
 ./go churn 200 600         # Generate 200 pods/sec churn for 600s(10 minutes) :: experiment D
+```
 
+Benchmark the control plane with ClusterLoader2, which runs the official Kubernetes density benchmark.
+
+```bash
 # Official Kubernetes benchmark
 ./go cl2                   # Run the ClusterLoader2 density benchmark :: experiment E
 
@@ -77,9 +88,9 @@ CLI
 
 Prometheus UI: http://127.0.0.1:9090 (started by kwokctl).
 
-## Key metrics / PromQL cheat sheet
+### Key metrics / PromQL cheat sheet
 
-```promql
+```bash
 # API p99 latency by verb (the SLO chart)
 histogram_quantile(0.99, sum(rate(apiserver_request_duration_seconds_bucket{verb!~"WATCH|CONNECT"}[1m])) by (verb, le))
 
@@ -105,7 +116,9 @@ sum(apiserver_registered_watchers) by (kind)
 sum(apiserver_current_inflight_requests) by (request_kind)
 ```
 
-## What will probably break (and the stories it gives you)
+---
+
+## What will probably break 
 
 1. `kubectl apply` of 1,000 node manifests crawls → client-side throttling.
    Fix: single concatenated manifest + server-side apply, or raise client QPS.
@@ -118,24 +131,34 @@ sum(apiserver_current_inflight_requests) by (request_kind)
 4. At tight bin-packing (run C), watch scheduling latency p99 climb as feasible
    nodes become scarce — filtering does more work per pod.
 
-## Write-up
 
-Use `docs/writeup-template.md`. Rule you already live by: label everything as a
-**simulation of control-plane scale**, never imply real GPU hardware numbers.
+---
 
-## Cleanup
-
-```bash
-kwokctl delete cluster --name ghostfleet
-```
 
 ## Repository layout
 
 ```
-scenarios/    declarative definitions — CL2 configs (density/), workload shapes (workloads/)
-manifests/    fake DGX-style node template
-scripts/      imperative execution — setup, scale, load, churn, snapshot, CL2 runner
-dashboards/   Grafana dashboard for the SLO views (see dashboards/README.md)
-results/      raw, immutable metric snapshots — every number in findings traces here
-docs/         experiment design (hypotheses first), findings, write-up template
+    .
+    │
+    ├── scenarios/          # ClusterLoader2 configs and workload definitions
+    │   ├── density/
+    │   └── workloads/
+    │
+    ├── manifests/          # Fake GPU node templates and Kubernetes manifests
+    │
+    ├── dashboards/         # Grafana dashboards
+    │
+    ├── scripts/            # Helper scripts (optional)
+    │
+    ├── results/            # Raw benchmark results (gitignored)
+    │
+    ├── docs/
+    │   ├── experiment-design.md
+    │   ├── findings.md
+    │   ├── writeup-template.md
+    │   └── architecture.md
+    │
+    ├── go
+    ├── README.md
+    └── LICENSE
 ```

@@ -9,7 +9,7 @@ set -euo pipefail
 
 COUNT="${1:-100}"
 GPUS_PER_NODE="${GPUS_PER_NODE:-8}"
-OUT="$(mktemp /tmp/kwok-nodes-XXXX.yaml)"
+OUT="$(mktemp /tmp/kwok-nodes-XXXXXX)"
 
 echo ">> Generating ${COUNT} fake GPU nodes (${GPUS_PER_NODE} GPUs each) -> ${OUT}"
 for i in $(seq 0 $((COUNT - 1))); do
