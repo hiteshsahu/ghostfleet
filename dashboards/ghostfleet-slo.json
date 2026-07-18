@@ -1,0 +1,98 @@
+{
+  "title": "Ghostfleet — Control-Plane SLOs",
+  "uid": "ghostfleet-slo",
+  "schemaVersion": 39,
+  "editable": true,
+  "time": { "from": "now-30m", "to": "now" },
+  "refresh": "10s",
+  "templating": {
+    "list": [
+      {
+        "name": "DS_PROMETHEUS",
+        "type": "datasource",
+        "query": "prometheus",
+        "label": "Prometheus"
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1, "type": "timeseries", "title": "API request p99 by verb (SLO: mutating < 1s)",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": { "defaults": { "unit": "s" }, "overrides": [] },
+      "targets": [{
+        "expr": "histogram_quantile(0.99, sum(rate(apiserver_request_duration_seconds_bucket{verb!~\"WATCH|CONNECT\"}[1m])) by (verb, le))",
+        "legendFormat": "{{verb}}"
+      }]
+    },
+    {
+      "id": 2, "type": "timeseries", "title": "Scheduler throughput (pods scheduled/sec)",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": { "defaults": { "unit": "ops" }, "overrides": [] },
+      "targets": [{
+        "expr": "sum(rate(scheduler_schedule_attempts_total{result=\"scheduled\"}[1m]))",
+        "legendFormat": "scheduled/s"
+      }]
+    },
+    {
+      "id": 3, "type": "timeseries", "title": "End-to-end scheduling latency p50/p99",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": { "defaults": { "unit": "s" }, "overrides": [] },
+      "targets": [
+        { "expr": "histogram_quantile(0.99, sum(rate(scheduler_pod_scheduling_sli_duration_seconds_bucket[5m])) by (le))", "legendFormat": "p99" },
+        { "expr": "histogram_quantile(0.50, sum(rate(scheduler_pod_scheduling_sli_duration_seconds_bucket[5m])) by (le))", "legendFormat": "p50" }
+      ]
+    },
+    {
+      "id": 4, "type": "timeseries", "title": "Scheduler pending pods by queue",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [{
+        "expr": "sum(scheduler_pending_pods) by (queue)",
+        "legendFormat": "{{queue}}"
+      }]
+    },
+    {
+      "id": 5, "type": "timeseries", "title": "etcd request p99 by operation",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": { "defaults": { "unit": "s" }, "overrides": [] },
+      "targets": [{
+        "expr": "histogram_quantile(0.99, sum(rate(etcd_request_duration_seconds_bucket[1m])) by (operation, le))",
+        "legendFormat": "{{operation}}"
+      }]
+    },
+    {
+      "id": 6, "type": "timeseries", "title": "etcd DB size",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
+      "targets": [{
+        "expr": "etcd_mvcc_db_total_size_in_bytes",
+        "legendFormat": "db size"
+      }]
+    },
+    {
+      "id": 7, "type": "timeseries", "title": "API Priority & Fairness — queue wait p99 / rejected",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 24 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": { "defaults": { "unit": "s" }, "overrides": [] },
+      "targets": [
+        { "expr": "histogram_quantile(0.99, sum(rate(apiserver_flowcontrol_request_wait_duration_seconds_bucket[1m])) by (priority_level, le))", "legendFormat": "wait p99 {{priority_level}}" },
+        { "expr": "sum(rate(apiserver_flowcontrol_rejected_requests_total[1m])) by (priority_level)", "legendFormat": "rejected/s {{priority_level}}" }
+      ]
+    },
+    {
+      "id": 8, "type": "timeseries", "title": "Watchers by kind / inflight requests",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 24 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [
+        { "expr": "sum(apiserver_registered_watchers) by (kind)", "legendFormat": "watchers {{kind}}" },
+        { "expr": "sum(apiserver_current_inflight_requests) by (request_kind)", "legendFormat": "inflight {{request_kind}}" }
+      ]
+    }
+  ]
+}
