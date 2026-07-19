@@ -37,6 +37,7 @@ case ${option} in
   1)
     echo "=== ⚙️ CLUSTER LIFECYCLE ==="
     echo "🏗️  setup                             -- Install kwokctl, create cluster + Prometheus"
+    echo "📡  status                            -- Fleet status: control plane, nodes, pods, GPUs"
     echo "🧹  clean                             -- Delete the kwok cluster"
     ;;
 
@@ -99,6 +100,59 @@ function check_tools() {
 function setup() {
   log "🏗️ Creating cluster ${CLUSTER_NAME} + Prometheus on port ${PROM_PORT}..."
   ./scripts/01-setup.sh "$@"
+}
+
+function status() {
+  log "📡 Fleet status — cluster: ${CLUSTER_NAME}"
+  local CTX="kwok-${CLUSTER_NAME}"
+
+  if ! kubectl config get-contexts "${CTX}" >/dev/null 2>&1; then
+    echo "❌ No kubeconfig context '${CTX}'. Run ./go setup first."
+    return 1
+  fi
+
+  echo "🐳 Control plane containers:"
+  local RUNTIME=""
+  command -v podman >/dev/null 2>&1 && RUNTIME=podman
+  [ -z "${RUNTIME}" ] && command -v docker >/dev/null 2>&1 && RUNTIME=docker
+  if [ -n "${RUNTIME}" ]; then
+    "${RUNTIME}" ps -a --filter "name=kwok-${CLUSTER_NAME}" --format "  {{.Names}}: {{.Status}}" 2>/dev/null
+  else
+    echo "  ⚠️  no docker/podman found to inspect containers"
+  fi
+
+  echo ""
+  if ! kubectl --context "${CTX}" get --raw /healthz >/dev/null 2>&1; then
+    echo "❌ apiserver unreachable — cluster may be down."
+    return 1
+  fi
+  echo "✅ apiserver reachable"
+
+  echo ""
+  echo "🖥️  Nodes:"
+  local NODE_COUNT READY_COUNT GPU_CAP
+  NODE_COUNT=$(kubectl --context "${CTX}" get nodes -l type=kwok --no-headers 2>/dev/null | wc -l | tr -d ' ')
+  READY_COUNT=$(kubectl --context "${CTX}" get nodes -l type=kwok --no-headers 2>/dev/null | { grep -c ' Ready' || true; })
+  GPU_CAP=$(kubectl --context "${CTX}" get nodes -l type=kwok -o json 2>/dev/null \
+    | jq '[.items[].status.allocatable["nvidia.com/gpu"] // "0" | tonumber] | add')
+  echo "  ${READY_COUNT}/${NODE_COUNT} Ready, ${GPU_CAP:-0} GPUs allocatable"
+
+  echo ""
+  echo "📦 Pods:"
+  local FOUND_NS=0
+  for ns in gpu-load churn; do
+    if kubectl --context "${CTX}" get ns "${ns}" >/dev/null 2>&1; then
+      FOUND_NS=1
+      local TOTAL SCHEDULED
+      TOTAL=$(kubectl --context "${CTX}" get pods -n "${ns}" --no-headers 2>/dev/null | wc -l | tr -d ' ')
+      SCHEDULED=$(kubectl --context "${CTX}" get pods -n "${ns}" --field-selector=spec.nodeName!='' --no-headers 2>/dev/null | wc -l | tr -d ' ')
+      echo "  ${ns}: ${SCHEDULED}/${TOTAL} scheduled"
+    fi
+  done
+  [ "${FOUND_NS}" -eq 0 ] && echo "  (no gpu-load/churn namespaces yet — run ./go load or ./go churn)"
+
+  echo ""
+  echo "📊 Prometheus: http://127.0.0.1:${PROM_PORT}"
 }
 
 function clean() {

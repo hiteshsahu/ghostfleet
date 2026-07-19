@@ -1,94 +1,88 @@
 # Ghost Fleet 🏴‍☠️
 
+> GhostFleet simulates a 1,000 node / 8,000-GPU Kubernetes cluster on a laptop using
+`KWOK`, load it with `ClusterLoader2` and a custom GPU scheduling workload, and measure how the control
+plane behaves.
+
+
 > A 1,000-node GPU cluster with nobody aboard.
-> 
+>
 > ![](./docs/img/cover.png)
 
-GhostFleet simulates a 1,000-node / 8,000-GPU Kubernetes cluster on a laptop using
-KWOK and ClusterLoader2 to study control-plane scalability.
+### **Why simulate?** 
 
-Control-plane scale experiments against a simulated GPU cluster, using 
-- [KWOK](https://kwok.sigs.k8s.io/) 
-- [ClusterLoader2](https://github.com/kubernetes/perf-tests/tree/master/clusterloader2). 
-
-Hypotheses in [docs/experiment-design.md](docs/experiment-design.md), numbers in [docs/findings.md](docs/findings.md), raw data in [results/](results/).
-Simulate a 1,000-node / 8,000-GPU Kubernetes cluster on a laptop, load it with
-ClusterLoader2 and a custom GPU scheduling workload, and measure how the control
-plane behaves — API latency, scheduler throughput, etcd pressure.
-
-**Why simulate?** The scarce skill in AI infrastructure isn't running GPUs —
+The scarce skill in AI infrastructure isn't running GPUs
 it's knowing how the control plane behaves when there are thousands of them.
+
 KWOK is the simulator SIG-Scalability itself uses to study control-plane scale
 without hardware; this repo uses it to run honest, reproducible experiments
 against the upstream scalability SLOs.
 
 ---
 
-## What KWOK does and does not simulate
 
-KWOK runs a **real** kube-apiserver, etcd, scheduler, and controller-manager
-(via `kwokctl`, using Docker or Podman). The *nodes* and *pod lifecycles* are faked by the
-kwok controller: nodes heartbeat, pods go Pending → Running instantly, but no
-kubelet, no containers, no real GPUs.
+## ⚡ Quickstart
 
-- ✅ Exercised for real: API server, etcd, scheduler, controllers, watches,
-  admission, resource accounting (including extended resources like
-  `nvidia.com/gpu`), taints/tolerations, affinity, topology spread.
-- ❌ Not exercised: kubelet, CNI/CSI, device plugin gRPC, DCGM, actual GPU
-  allocation. Knowing the boundary of the
-  simulation is the point — these experiments characterize the control plane
-  only, and every claim in [docs/findings.md](docs/findings.md) is scoped accordingly.
+### 📟 Go CLI
 
+Start by cloning the repo and running the `go` script in the root directory.
 
-
-
-## Quickstart
-
-### Prereqs
+### 🛠 Prereqs
 Docker or Podman running, kubectl, jq, go (for CL2). 8GB+ RAM free.
 
-
-### Go CLI 
-
-Start by cloning the repo and running the `go` script in the root directory. It wraps the commands below, but you can also run them directly.
+**Bootstrap GhostFleet**
 
 ```bash
-# Bootstrap GhostFleet
-./go setup                 # Install dependencies and create the KWOK cluster + Prometheus
-./go check_tools           # verifies the tool are installed
+# 🏗️ Install dependencies and create the KWOK cluster + Prometheus
+./go setup                 
 
+```
+
+You can varify missing dependencies with:
+
+```bash
+# ⚙️ verifies the tool are installed
+./go check_tools           
 ```
 
 Start the fleet, load it with pods, and snapshot the metrics.
 
 ```bash
-# Build the fleet
-./go nodes 1000            # creates 1,000 fake GPU nodes (8x nvidia.com/gpu each)
+# 🖥️ Create N fake GPU nodes (8x nvidia.com/gpu each)
+./go nodes 1000            # creates 1,000 fake GPU nodes (8x nvidia.com/gpu each node)
 
-# Fire the cannons
+# 📦 Schedule pods requesting GPUs
 ./go load 8000 1           # schedules 8,000 pods requesting 1 GPU; times it
 
-# Collect the treasure
-./go snapshot              # snapshots key PromQL results into results
-
-# Stir the seas
+# 🌊 Stir the seas : Sustained create/delete pressure (APF / etcd / watches)
 ./go churn 200 600         # Generate 200 pods/sec churn for 600s(10 minutes) :: experiment D
 ```
 
 Benchmark the control plane with ClusterLoader2, which runs the official Kubernetes density benchmark.
 
 ```bash
-# Official Kubernetes benchmark
+# 🧪 Official Kubernetes benchmark
 ./go cl2                   # Run the ClusterLoader2 density benchmark :: experiment E
 
-# Scuttle the fleet
+# 📡 Check on the fleet
+./go status                # Control plane health, node/GPU counts, pod scheduling status
+
+# 🧹 Scuttle the fleet
 ./go clean                 # Delete the cluster and clean up
 
 ```
 
-Prometheus UI: http://127.0.0.1:9090 (started by kwokctl).
+### 📊 Observability
 
-### Key metrics / PromQL cheat sheet
+Prometheus starts at: http://127.0.0.1:9090 (started by kwokctl).
+
+```bash
+# 📸 Dump SLO metrics from Prometheus into results
+./go snapshot             
+
+```
+
+**Key metrics / PromQL cheat sheet**
 
 ```bash
 # API p99 latency by verb (the SLO chart)
@@ -118,6 +112,26 @@ sum(apiserver_current_inflight_requests) by (request_kind)
 
 ---
 
+###  [KWOK](https://kwok.sigs.k8s.io/) 
+
+Ghost fleet is a Control-plane scale experiments against a simulated GPU cluster, using
+- [KWOK](https://kwok.sigs.k8s.io/)
+- [ClusterLoader2](https://github.com/kubernetes/perf-tests/tree/master/clusterloader2).
+
+Hypotheses in [docs/experiment-design.md](docs/experiment-design.md), numbers in [docs/findings.md](docs/findings.md), raw data in [results/](results/).
+
+KWOK runs a **real** kube-apiserver, etcd, scheduler, and controller-manager
+(via `kwokctl`, using Docker or Podman).
+
+The *nodes* and *pod lifecycles* are faked by the
+kwok controller
+- Emulates nodes heartbeat, pods go Pending → Running instantly, but no
+  kubelet, no containers, no real GPUs.
+- Fakes kubelet, CNI/CSI, device plugin gRPC, DCGM, actual GPU
+  allocation.
+
+---
+
 ## What will probably break 
 
 1. `kubectl apply` of 1,000 node manifests crawls → client-side throttling.
@@ -131,9 +145,7 @@ sum(apiserver_current_inflight_requests) by (request_kind)
 4. At tight bin-packing (run C), watch scheduling latency p99 climb as feasible
    nodes become scarce — filtering does more work per pod.
 
-
 ---
-
 
 ## Repository layout
 
