@@ -1,0 +1,38 @@
+[
+  {
+    "metric": {
+      "queue": "active"
+    },
+    "value": [
+      1784449893.879,
+      "0"
+    ]
+  },
+  {
+    "metric": {
+      "queue": "backoff"
+    },
+    "value": [
+      1784449893.879,
+      "0"
+    ]
+  },
+  {
+    "metric": {
+      "queue": "gated"
+    },
+    "value": [
+      1784449893.879,
+      "0"
+    ]
+  },
+  {
+    "metric": {
+      "queue": "unschedulable"
+    },
+    "value": [
+      1784449893.879,
+      "0"
+    ]
+  }
+]

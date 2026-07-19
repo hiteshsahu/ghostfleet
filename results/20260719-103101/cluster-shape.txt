@@ -1,0 +1,3 @@
+nodes: 1000
+pods:  10500
+timestamp: 2026-07-19T08:34:01Z
