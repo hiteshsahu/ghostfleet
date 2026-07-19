@@ -75,6 +75,7 @@ Start the fleet, load it with pods.
 
 # 🌊 Stir the seas : Sustained create/delete pressure (APF / etcd / watches)
 ./go churn 200 600         # Generate 200 pods/sec churn for 600s(10 minutes) :: experiment D
+./go churn_limited 200 600 # Same, but rate-limited (bounded concurrency + request-timeout) — see docs/findings.md
 ```
 
 ```bash

@@ -42,7 +42,14 @@ above and with the 100–300 pods/s hypothesis in experiment-design.md.
    without bound, and the growing object count itself adds more load —
    a feedback loop. This is a confound worth knowing about: Run D as
    currently written measures "control plane vs. an unbounded churn client,"
-   not "control plane vs. a rate-limited steady-state churn."
+   not "control plane vs. a rate-limited steady-state churn." **Fixed** in
+   `scripts/05b-churn-limited.sh` / `./go churn_limited` — same workload, but
+   with a hard cap on in-flight `kubectl` calls and a `--request-timeout` on
+   every one, so the generator backs off (and says so) instead of piling up.
+   Smoke-tested at 200/60s: it genuinely fell behind schedule 10/29 batches
+   and reported it, then drained cleanly with zero stuck processes — a full
+   600s re-run of Run D with this version is the natural next step to get a
+   clean, unconfounded number.
 3. **First attempt at Run D OOM-killed the control plane outright.** Before
    the run captured above, an identical `./go churn 200 600` run got
    `kube-apiserver` and Prometheus SIGKILL'd (exit 137) by the OS during the

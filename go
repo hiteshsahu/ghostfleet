@@ -46,6 +46,7 @@ case ${option} in
     echo "🖥️  nodes <N>                         -- Create N fake GPU nodes (8x nvidia.com/gpu each)"
     echo "📦  load <pods> <gpus>                -- Schedule pods requesting GPUs; time it"
     echo "🌊  churn <rate> <sec>                -- Sustained create/delete pressure (APF / etcd / watches)"
+    echo "🚦  churn_limited <rate> <sec> [max]   -- Same, but with bounded concurrency + request-timeout (see docs/findings.md)"
     ;;
 
   3)
@@ -177,6 +178,11 @@ function load() {
 function churn() {
   log "🌊 Running create/delete churn..."
   ./scripts/05-churn.sh "$@"
+}
+
+function churn_limited() {
+  log "🚦 Running rate-limited create/delete churn..."
+  ./scripts/05b-churn-limited.sh "$@"
 }
 
 # ---------------------------------------------------------------------------------------
