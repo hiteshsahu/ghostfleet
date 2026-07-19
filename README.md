@@ -23,27 +23,34 @@ against the upstream scalability SLOs.
 
 ## ⚡ Quickstart
 
+### 🛠 Prereqs
+Docker or Podman running, kubectl, jq, go (for CL2). 8GB+ RAM free.
+
 ### 📟 Go CLI
 
 Start by cloning the repo and running the `go` script in the root directory.
 
-### 🛠 Prereqs
-Docker or Podman running, kubectl, jq, go (for CL2). 8GB+ RAM free.
+### ⚙️ Install dependencies
 
-**Bootstrap GhostFleet**
+Install KWOK, ClusterLoader2, and Prometheus if missing & then create the KWOK cluster.
+
+Need to run each time after clean up.
+
 
 ```bash
 # 🏗️ Install dependencies and create the KWOK cluster + Prometheus
-./go setup                 
-
+./go setup  
 ```
 
-You can varify missing dependencies with:
+You can check dependencies with:
 
 ```bash
 # ⚙️ verifies the tool are installed
 ./go check_tools           
 ```
+
+
+### ▶️ Run
 
 Start the fleet, load it with pods, and snapshot the metrics.
 
@@ -60,6 +67,7 @@ Start the fleet, load it with pods, and snapshot the metrics.
 
 Benchmark the control plane with ClusterLoader2, which runs the official Kubernetes density benchmark.
 
+### 🧪 Test & Benchmark
 ```bash
 # 🧪 Official Kubernetes benchmark
 ./go cl2                   # Run the ClusterLoader2 density benchmark :: experiment E
@@ -119,7 +127,7 @@ Ghost fleet is a Control-plane scale experiments against a simulated GPU cluster
 - [KWOK](https://kwok.sigs.k8s.io/)
 - [ClusterLoader2](https://github.com/kubernetes/perf-tests/tree/master/clusterloader2).
 
-Hypotheses in [docs/experiment-design.md](docs/experiment-design.md), numbers in [docs/findings.md](docs/findings.md), raw data in [results/](results/).
+Hypotheses in [docs/experiment-design.md](./docs/experiment-design.md), numbers in [docs/findings.md](./docs/findings.md), raw data in [./results/](./results/).
 
 KWOK runs a **real** kube-apiserver, etcd, scheduler, and controller-manager
 (via `kwokctl`, using Docker or Podman).
@@ -148,7 +156,7 @@ kwok controller
 
 ---
 
-## Repository layout
+## 📁 Folder Structure
 
 ```
     .
