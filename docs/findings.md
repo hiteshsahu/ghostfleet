@@ -1,3 +1,4 @@
+
 # 📋 Findings
 
 Every number below links to a raw snapshot in [results/](../results/). All runs
@@ -65,7 +66,6 @@ above and with the 100–300 pods/s hypothesis in experiment-design.md.
 4. **`kubectl apply` of 1,000 node manifests would crawl under default
    client-side throttling** — avoided by generating one concatenated
    manifest and using server-side apply (`scripts/02-scale-nodes.sh`).
-   *Interview story: "first bottleneck at scale is usually the client."*
 5. **Upstream ClusterLoader2 no longer ships a `kwok` provider.** Checked
    `pkg/provider/provider.go`'s `NewProvider` switch on a fresh clone of
    `kubernetes/perf-tests` — no `kwok` case exists. `--provider=local` is the

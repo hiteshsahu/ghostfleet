@@ -7,7 +7,7 @@
 plane behaves.
 
 
-> A 1,000s of node GPU cluster with nobody aboard.
+> A 1,000-node GPU cluster with nobody aboard.
 >
 > ![Cover](./docs/img/cover.jpg)
 
@@ -15,11 +15,11 @@ plane behaves.
 I wanted to study limits of Kubernetes on real GPU cluster at super scale like in DGX Data servers with thousands of GPU used by millions of users but that is not possible because
 
 - I have no access to a real prod DGX GPU cluster
-- I cant aford one, obviously :)
+- I can't afford one, obviously :)
 
-So I created this simulation where I spin off my fleet with thousands of nodes with 8 GPU virtual gpu each that can run my GPU load of k8 pods. 
+So I created this simulation where I spin up my fleet with thousands of nodes with 8 GPU virtual gpu each that can run my GPU load of K8s pods. 
 
-This helps me test the limits of Kubernetes at hyper scale like in a real world GPU heavy cluster running workloads similar to CLaud or CHATGPT
+This helps me test the limits of Kubernetes at hyper scale like in a real world GPU heavy cluster running workloads similar to Claude or ChatGPT
 
 See real test results on [GitHub Pages](https://hiteshsahu.github.io/ghostfleet/)
 
@@ -204,7 +204,6 @@ kwok controller
 
 1. `kubectl apply` of 1,000 node manifests crawls → client-side throttling.
    Fix: single concatenated manifest + server-side apply, or raise client QPS.
-   *Interview story: "first bottleneck at scale is usually the client."*
 2. Creating 8,000 pods via one Deployment: controller-manager's own client QPS
    (`--kube-api-qps`, default 20) rate-limits pod creation — the scheduler ends
    up starved, not slow. Distinguish "scheduler is slow" from "scheduler is
