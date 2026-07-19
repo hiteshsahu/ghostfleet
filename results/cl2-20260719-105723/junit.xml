@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <testsuite name="ClusterLoaderV2" tests="0" failures="0" errors="0" time="47.221">
+      <testcase name="kwok-gpu-density overall (/Users/hitesh/Documents/GitHub/ghostfleet/scenarios/density/density-config.yaml)" classname="ClusterLoaderV2" time="47.219856583"></testcase>
+      <testcase name="kwok-gpu-density: [step: 01] Start measurements [00] - APIResponsiveness" classname="ClusterLoaderV2" time="0.004090167"></testcase>
+      <testcase name="kwok-gpu-density: [step: 01] Start measurements [01] - SchedulingThroughput" classname="ClusterLoaderV2" time="0.055185375"></testcase>
+      <testcase name="kwok-gpu-density: [step: 02] Create GPU deployments" classname="ClusterLoaderV2" time="1.020350792"></testcase>
+      <testcase name="kwok-gpu-density: [step: 03] Wait for pods running [00] - WaitForRunningPods" classname="ClusterLoaderV2" time="25.056396917"></testcase>
+      <testcase name="kwok-gpu-density: [step: 04] Gather measurements [00] - SchedulingThroughput" classname="ClusterLoaderV2" time="0.001263083"></testcase>
+      <testcase name="kwok-gpu-density: [step: 04] Gather measurements [01] - APIResponsiveness" classname="ClusterLoaderV2" time="0.001277583"></testcase>
+      <testcase name="kwok-gpu-density: [step: 05] Delete deployments" classname="ClusterLoaderV2" time="1.027592"></testcase>
+  </testsuite>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Ghostfleet report — 2026-07-19T07:09:25Z</title>
+<title>Ghostfleet report — 2026-07-19T08:21:02Z</title>
 <style>
 :root {
   color-scheme: light;
@@ -80,15 +80,15 @@ th { color: var(--text-muted); font-weight: 500; }
 <body>
 <div class="viz-root">
   <h1>Ghostfleet run report</h1>
-  <p class="subtitle">1000 nodes · 8000 pods · snapshot <code>2026-07-19T07:09:25Z</code></p>
+  <p class="subtitle">1000 nodes · 21546 pods · snapshot <code>2026-07-19T08:21:02Z</code></p>
 
   <h2>Cluster shape</h2>
   <div class="kpi-row">
     <div class="stat-tile"><div class="stat-label">Nodes</div><div class="stat-value">1000</div></div>
-    <div class="stat-tile"><div class="stat-label">Pods</div><div class="stat-value">8000</div></div>
-    <div class="stat-tile"><div class="stat-label">etcd DB size</div><div class="stat-value">116.6<span class="stat-unit">MB</span></div></div>
-    <div class="stat-tile"><div class="stat-label">Scheduler throughput</div><div class="stat-value">28.2<span class="stat-unit">pods/s (5m avg)</span></div></div>
-    <div class="stat-tile"><div class="stat-label">Scheduling e2e p99</div><div class="stat-value">0.154<span class="stat-unit">s</span></div></div>
+    <div class="stat-tile"><div class="stat-label">Pods</div><div class="stat-value">21546</div></div>
+    <div class="stat-tile"><div class="stat-label">etcd DB size</div><div class="stat-value">550.9<span class="stat-unit">MB</span></div></div>
+    <div class="stat-tile"><div class="stat-label">Scheduler throughput</div><div class="stat-value">142.8<span class="stat-unit">pods/s (5m avg)</span></div></div>
+    <div class="stat-tile"><div class="stat-label">Scheduling e2e p99</div><div class="stat-value">0.530<span class="stat-unit">s</span></div></div>
   </div>
 
   <h2>API request p99 latency by verb</h2>
@@ -96,23 +96,23 @@ th { color: var(--text-muted); font-weight: 500; }
     
       <div class="bar-row">
         <span class="bar-label">GET</span>
-        <div class="bar-track"><div class="bar-fill" style="width:6.1860222088477%"></div></div>
-        <span class="bar-value">4.97 ms</span>
-      </div>
-      <div class="bar-row">
-        <span class="bar-label">POST</span>
-        <div class="bar-track"><div class="bar-fill" style="width:24.637670806406643%"></div></div>
-        <span class="bar-value">19.78 ms</span>
-      </div>
-      <div class="bar-row">
-        <span class="bar-label">PUT</span>
-        <div class="bar-track"><div class="bar-fill" style="width:25.345579615175968%"></div></div>
-        <span class="bar-value">20.35 ms</span>
+        <div class="bar-track"><div class="bar-fill" style="width:23.061177560429797%"></div></div>
+        <span class="bar-value">22.99 ms</span>
       </div>
       <div class="bar-row">
         <span class="bar-label">LIST</span>
         <div class="bar-track"><div class="bar-fill" style="width:100%"></div></div>
-        <span class="bar-value">80.28 ms</span>
+        <span class="bar-value">99.70 ms</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">POST</span>
+        <div class="bar-track"><div class="bar-fill" style="width:24.54625001051846%"></div></div>
+        <span class="bar-value">24.47 ms</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">PUT</span>
+        <div class="bar-track"><div class="bar-fill" style="width:24.67111597499818%"></div></div>
+        <span class="bar-value">24.60 ms</span>
       </div>
       <div class="bar-row">
         <span class="bar-label">APPLY</span>
@@ -121,16 +121,16 @@ th { color: var(--text-muted); font-weight: 500; }
       </div>
       <div class="bar-row">
         <span class="bar-label">PATCH</span>
-        <div class="bar-track"><div class="bar-fill" style="width:27.30384507427407%"></div></div>
-        <span class="bar-value">21.92 ms</span>
+        <div class="bar-track"><div class="bar-fill" style="width:24.736904945994766%"></div></div>
+        <span class="bar-value">24.66 ms</span>
       </div>
       <div class="bar-row">
         <span class="bar-label">DELETE</span>
-        <div class="bar-track"><div class="bar-fill" style="width:0%"></div></div>
-        <span class="bar-value">no data</span>
+        <div class="bar-track"><div class="bar-fill" style="width:25.03508121578247%"></div></div>
+        <span class="bar-value">24.96 ms</span>
       </div>
     <details><summary>Table view</summary>
-      <table><thead><tr><th>Verb</th><th>p99</th></tr></thead><tbody><tr><td>GET</td><td>4.97 ms</td></tr><tr><td>POST</td><td>19.78 ms</td></tr><tr><td>PUT</td><td>20.35 ms</td></tr><tr><td>LIST</td><td>80.28 ms</td></tr><tr><td>APPLY</td><td>no data</td></tr><tr><td>PATCH</td><td>21.92 ms</td></tr><tr><td>DELETE</td><td>no data</td></tr></tbody></table>
+      <table><thead><tr><th>Verb</th><th>p99</th></tr></thead><tbody><tr><td>GET</td><td>22.99 ms</td></tr><tr><td>LIST</td><td>99.70 ms</td></tr><tr><td>POST</td><td>24.47 ms</td></tr><tr><td>PUT</td><td>24.60 ms</td></tr><tr><td>APPLY</td><td>no data</td></tr><tr><td>PATCH</td><td>24.66 ms</td></tr><tr><td>DELETE</td><td>24.96 ms</td></tr></tbody></table>
     </details>
     <p class="stat-label" style="margin-top:10px;">SLO: mutating &lt; 1s · read-only namespaced &lt; 5s · read-only cluster-scoped &lt; 30s</p>
   </div>
@@ -139,37 +139,37 @@ th { color: var(--text-muted); font-weight: 500; }
   <div class="card">
     
       <div class="bar-row">
-        <span class="bar-label">list</span>
-        <div class="bar-track"><div class="bar-fill" style="width:31.59605608812706%"></div></div>
-        <span class="bar-value">4.95 ms</span>
-      </div>
-      <div class="bar-row">
-        <span class="bar-label">listWithCount</span>
-        <div class="bar-track"><div class="bar-fill" style="width:31.59605608812706%"></div></div>
-        <span class="bar-value">4.95 ms</span>
-      </div>
-      <div class="bar-row">
         <span class="bar-label">update</span>
-        <div class="bar-track"><div class="bar-fill" style="width:73.7133099600068%"></div></div>
-        <span class="bar-value">11.55 ms</span>
+        <div class="bar-track"><div class="bar-fill" style="width:95.97095045147499%"></div></div>
+        <span class="bar-value">23.74 ms</span>
       </div>
       <div class="bar-row">
         <span class="bar-label">delete</span>
-        <div class="bar-track"><div class="bar-fill" style="width:0%"></div></div>
-        <span class="bar-value">no data</span>
+        <div class="bar-track"><div class="bar-fill" style="width:95.36133503918909%"></div></div>
+        <span class="bar-value">23.59 ms</span>
       </div>
       <div class="bar-row">
         <span class="bar-label">create</span>
-        <div class="bar-track"><div class="bar-fill" style="width:100%"></div></div>
-        <span class="bar-value">15.67 ms</span>
+        <div class="bar-track"><div class="bar-fill" style="width:94.68841851072794%"></div></div>
+        <span class="bar-value">23.42 ms</span>
       </div>
       <div class="bar-row">
         <span class="bar-label">get</span>
-        <div class="bar-track"><div class="bar-fill" style="width:31.694791380918318%"></div></div>
-        <span class="bar-value">4.97 ms</span>
+        <div class="bar-track"><div class="bar-fill" style="width:91.09608069473546%"></div></div>
+        <span class="bar-value">22.53 ms</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">list</span>
+        <div class="bar-track"><div class="bar-fill" style="width:84.0970350404312%"></div></div>
+        <span class="bar-value">20.80 ms</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">listWithCount</span>
+        <div class="bar-track"><div class="bar-fill" style="width:100%"></div></div>
+        <span class="bar-value">24.73 ms</span>
       </div>
     <details><summary>Table view</summary>
-      <table><thead><tr><th>Operation</th><th>p99</th></tr></thead><tbody><tr><td>list</td><td>4.95 ms</td></tr><tr><td>listWithCount</td><td>4.95 ms</td></tr><tr><td>update</td><td>11.55 ms</td></tr><tr><td>delete</td><td>no data</td></tr><tr><td>create</td><td>15.67 ms</td></tr><tr><td>get</td><td>4.97 ms</td></tr></tbody></table>
+      <table><thead><tr><th>Operation</th><th>p99</th></tr></thead><tbody><tr><td>update</td><td>23.74 ms</td></tr><tr><td>delete</td><td>23.59 ms</td></tr><tr><td>create</td><td>23.42 ms</td></tr><tr><td>get</td><td>22.53 ms</td></tr><tr><td>list</td><td>20.80 ms</td></tr><tr><td>listWithCount</td><td>24.73 ms</td></tr></tbody></table>
     </details>
   </div>
 
@@ -182,11 +182,11 @@ th { color: var(--text-muted); font-weight: 500; }
   <div class="card">
     <p class="stat-label">No watcher data in this window.</p>
     <details><summary>Inflight requests</summary>
-      <table><thead><tr><th>Kind</th><th>Count</th></tr></thead><tbody><tr><td>mutating</td><td>14</td></tr><tr><td>readOnly</td><td>0</td></tr></tbody></table>
+      <table><thead><tr><th>Kind</th><th>Count</th></tr></thead><tbody><tr><td>mutating</td><td>14</td></tr><tr><td>readOnly</td><td>4</td></tr></tbody></table>
     </details>
   </div>
 
-  <p class="footer">Generated from results/20260719-090923/ — raw PromQL snapshots in that folder are the source of truth.</p>
+  <p class="footer">Generated from results/20260719-102054/ — raw PromQL snapshots in that folder are the source of truth.</p>
 </div>
 </body>
 </html>

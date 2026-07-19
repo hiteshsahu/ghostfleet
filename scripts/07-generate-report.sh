@@ -20,7 +20,7 @@ scalar() {
 }
 
 ETCD_BYTES=$(scalar etcd_db_size_bytes.json '.[0].value[1] // empty')
-ETCD_MB=$(awk -v b="${ETCD_BYTES:-0}" 'BEGIN{ if (b=="—"||b=="") {print "—"} else {printf "%.1f", b/1048576} }')
+ETCD_MB=$(awk -v b="${ETCD_BYTES:-}" 'BEGIN{ if (b=="—"||b=="") {print "—"} else {printf "%.1f", b/1048576} }')
 SCHED_TPUT=$(scalar sched_throughput.json '.[0].value[1] // empty')
 SCHED_TPUT_FMT=$(awk -v v="${SCHED_TPUT:-}" 'BEGIN{ if (v=="—"||v=="") {print "—"} else {printf "%.1f", v} }')
 SCHED_E2E=$(scalar sched_e2e_p99.json '.[0].value[1] // empty')

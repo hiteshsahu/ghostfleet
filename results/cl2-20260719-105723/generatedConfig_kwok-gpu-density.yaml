@@ -1,0 +1,109 @@
+name: kwok-gpu-density
+dependencies: []
+automanagednamespaces: 0
+namespace:
+  number: 10
+  prefix: test-jk7lnc
+  deletestalenamespaces: false
+  deleteautomanagednamespaces: true
+  enableexistingnamespaces: false
+  deletenamespacetimeout: 600000000000
+steps:
+- phases: []
+  measurements:
+  - method: APIResponsivenessPrometheus
+    params:
+      action: start
+    identifier: APIResponsiveness
+    instances: []
+  - method: SchedulingThroughput
+    params:
+      action: start
+      labelSelector: group = gpu-density
+    identifier: SchedulingThroughput
+    instances: []
+  module:
+    path: ""
+    params: {}
+  name: Start measurements
+- phases:
+  - namespacerange:
+      min: 1
+      max: 10
+      basename: null
+    namespacelist: []
+    replicaspernamespace: 10
+    tuningset: Uniform100qps
+    objectbundle:
+    - basename: gpu-dep
+      objecttemplatepath: gpu-deployment.yaml
+      templatefillmap:
+        Replicas: 40
+      listunknownobjectoptions: null
+  measurements: []
+  module:
+    path: ""
+    params: {}
+  name: Create GPU deployments
+- phases: []
+  measurements:
+  - method: WaitForRunningPods
+    params:
+      desiredPodCount: 4000
+      labelSelector: group = gpu-density
+      timeout: 30m
+    identifier: WaitForRunningPods
+    instances: []
+  module:
+    path: ""
+    params: {}
+  name: Wait for pods running
+- phases: []
+  measurements:
+  - method: SchedulingThroughput
+    params:
+      action: gather
+    identifier: SchedulingThroughput
+    instances: []
+  - method: APIResponsivenessPrometheus
+    params:
+      action: gather
+    identifier: APIResponsiveness
+    instances: []
+  module:
+    path: ""
+    params: {}
+  name: Gather measurements
+- phases:
+  - namespacerange:
+      min: 1
+      max: 10
+      basename: null
+    namespacelist: []
+    replicaspernamespace: 0
+    tuningset: Uniform100qps
+    objectbundle:
+    - basename: gpu-dep
+      objecttemplatepath: gpu-deployment.yaml
+      templatefillmap: {}
+      listunknownobjectoptions: null
+  measurements: []
+  module:
+    path: ""
+    params: {}
+  name: Delete deployments
+tuningsets:
+- name: Uniform100qps
+  initialdelay: 0
+  qpsload:
+    qps: 100
+  randomizedload: null
+  steppedload: null
+  timelimitedload: null
+  randomizedtimelimitedload: null
+  parallelismlimitedload: null
+  globalqpsload: null
+  poissonload: null
+chaosmonkey:
+  nodefailure: null
+  excludednodes: {}
