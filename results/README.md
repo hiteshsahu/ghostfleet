@@ -5,7 +5,7 @@ Every experiment run gets a timestamped folder created by `./go snapshot`
 docs/findings.md must trace back to a raw snapshot here.
 
 Each folder contains:
-- `cluster-shape.txt` — node count, pod count, UTC timestamp at snapshot time
+- `cluster-shape.txt`  node count, pod count, UTC timestamp at snapshot time
 - `api_p99_by_verb.json` — apiserver_request_duration p99 per verb (SLO: mutating < 1s)
 - `sched_throughput.json` — scheduled pods/sec over the last 5m window
 - `sched_e2e_p99.json` — scheduler_pod_scheduling_sli_duration p99
