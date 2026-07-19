@@ -1,15 +1,15 @@
-# Findings
+# 📋 Findings
 
 *(Filled after runs — every number links to a snapshot in results/.)*
 
-| Metric | 100 nodes | 500 nodes | 1,000 nodes |
-|---|---|---|---|
-| Scheduling throughput (pods/s) | | | |
-| Scheduling p99 (s) | | | |
-| API mutating p99 (s) | | | |
-| etcd p99 write (ms) | | | |
-| etcd DB size (MB) | | | |
-| Time to schedule full workload | | | |
+| Metric                         | 100 nodes | 500 nodes | 1,000 nodes |
+|--------------------------------|-----------|-----------|-------------|
+| Scheduling throughput (pods/s) |           |           |             |
+| Scheduling p99 (s)             |           |           |             |
+| API mutating p99 (s)           |           |           |             |
+| etcd p99 write (ms)            |           |           |             |
+| etcd DB size (MB)              |           |           |             |
+| Time to schedule full workload |           |           |             |
 
 ## What broke first
 

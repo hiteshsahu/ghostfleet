@@ -112,7 +112,8 @@ sum(apiserver_current_inflight_requests) by (request_kind)
 
 ---
 
-###  [KWOK](https://kwok.sigs.k8s.io/) 
+###  [KWOK ](https://kwok.sigs.k8s.io/) ::  *K*ubernetes *W*ith*O*ut *K*ubelet
+
 
 Ghost fleet is a Control-plane scale experiments against a simulated GPU cluster, using
 - [KWOK](https://kwok.sigs.k8s.io/)

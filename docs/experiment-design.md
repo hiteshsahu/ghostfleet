@@ -1,6 +1,5 @@
-# Ghostfleet — Experiment Design
+# Ghost fleet — Experiment Design 🏴‍☠
 
-Committed BEFORE running anything: predictions first, measurements second.
 
 ## Hypotheses to test (pick 3–4, write down predictions BEFORE running)
 
@@ -29,13 +28,13 @@ Committed BEFORE running anything: predictions first, measurements second.
 
 ## Experiment matrix
 
-| Run | Nodes | GPUs/node | Workload | What you're probing |
-|-----|-------|-----------|----------|---------------------|
-| A | 100 | 8 | 2,000 GPU pods (1 GPU each) | baseline throughput + latency |
-| B | 500 | 8 | 10,000 GPU pods | scaling trend |
-| C | 1000 | 8 | 8,000 pods, 8 GPU each → bin-packing pressure | scheduler under tight fit |
-| D | 1000 | 8 | churn: create/delete 200 pods/sec for 10 min | APF, etcd, watch load |
-| E | 1000 | 8 | ClusterLoader2 density test | standardized, comparable numbers |
+| Run | Nodes | GPUs/node | Workload                                      | What you're probing              |
+|-----|-------|-----------|-----------------------------------------------|----------------------------------|
+| A   | 100   | 8         | 2,000 GPU pods (1 GPU each)                   | baseline throughput + latency    |
+| B   | 500   | 8         | 10,000 GPU pods                               | scaling trend                    |
+| C   | 1000  | 8         | 8,000 pods, 8 GPU each → bin-packing pressure | scheduler under tight fit        |
+| D   | 1000  | 8         | churn: create/delete 200 pods/sec for 10 min  | APF, etcd, watch load            |
+| E   | 1000  | 8         | ClusterLoader2 density test                   | standardized, comparable numbers |
 
 Optional stretch: rerun C with `percentageOfNodesToScore: 100` vs default and
 compare throughput — a great one-slide finding.
