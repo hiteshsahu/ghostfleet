@@ -1,16 +1,18 @@
 # Ghost Fleet 🏴‍☠️
+[![📰 Publish Test Results](https://github.com/hiteshsahu/ghostfleet/actions/workflows/pages.yml/badge.svg)](https://github.com/hiteshsahu/ghostfleet/actions/workflows/pages.yml)
 
 
 > GhostFleet simulates a 1,000 node / 8,000-GPU Kubernetes cluster on a laptop using
 `KWOK`, load it with `ClusterLoader2` and a custom GPU scheduling workload, and measure how the control
 plane behaves.
 
+See real test results on [GitHub Pages](https://hiteshsahu.github.io/ghostfleet/)
 
-> A 1,000-node GPU cluster with nobody aboard.
+
+> A 1,000s of node GPU cluster with nobody aboard.
 >
 > ![](./docs/img/cover.png)
 
-[![📰 Publish Test Results](https://github.com/hiteshsahu/ghostfleet/actions/workflows/pages.yml/badge.svg)](https://github.com/hiteshsahu/ghostfleet/actions/workflows/pages.yml)
 
 I wanted to study limits of Kubernetes on real GPU cluster at super scale like in DGX Data servers with thousands of GPU used by millions of users but that is not possible because
 
