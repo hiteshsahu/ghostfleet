@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ghostfleet report — 2026-07-19T06:59:32Z</title>
+<style>
+:root {
+  color-scheme: light;
+  --surface-1:      #fcfcfb;
+  --page:           #f9f9f7;
+  --text-primary:   #0b0b0b;
+  --text-secondary: #52514e;
+  --text-muted:     #898781;
+  --grid:           #e1e0d9;
+  --baseline:       #c3c2b7;
+  --series-1:       #2a78d6;
+  --good:           #0ca30c;
+  --border:         rgba(11,11,11,0.10);
+}
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    color-scheme: dark;
+    --surface-1:      #1a1a19;
+    --page:           #0d0d0d;
+    --text-primary:   #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted:     #898781;
+    --grid:           #2c2c2a;
+    --baseline:       #383835;
+    --series-1:       #3987e5;
+    --good:           #0ca30c;
+    --border:         rgba(255,255,255,0.10);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --surface-1:      #1a1a19;
+  --page:           #0d0d0d;
+  --text-primary:   #ffffff;
+  --text-secondary: #c3c2b7;
+  --text-muted:     #898781;
+  --grid:           #2c2c2a;
+  --baseline:       #383835;
+  --series-1:       #3987e5;
+  --good:           #0ca30c;
+  --border:         rgba(255,255,255,0.10);
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: var(--page);
+  color: var(--text-primary);
+}
+.viz-root { max-width: 920px; margin: 0 auto; padding: 32px 20px 64px; }
+h1 { font-size: 22px; margin: 0 0 4px; }
+.subtitle { color: var(--text-secondary); font-size: 14px; margin: 0 0 28px; }
+.subtitle code { background: var(--grid); padding: 1px 5px; border-radius: 4px; }
+h2 { font-size: 15px; margin: 36px 0 12px; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+.kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.stat-tile { background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+.stat-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
+.stat-value { font-size: 26px; font-weight: 600; }
+.stat-unit { font-size: 13px; color: var(--text-muted); margin-left: 4px; }
+.card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; }
+.bar-row { display: grid; grid-template-columns: 80px 1fr 90px; align-items: center; gap: 10px; padding: 5px 0; }
+.bar-label { font-size: 13px; color: var(--text-secondary); }
+.bar-track { height: 16px; background: var(--grid); border-radius: 4px; overflow: hidden; }
+.bar-fill { height: 100%; background: var(--series-1); border-radius: 4px; min-width: 2px; }
+.bar-value { font-size: 12px; color: var(--text-secondary); text-align: right; font-variant-numeric: tabular-nums; }
+details { margin-top: 14px; }
+summary { cursor: pointer; font-size: 12px; color: var(--text-secondary); }
+table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 13px; }
+th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--grid); font-variant-numeric: tabular-nums; }
+th { color: var(--text-muted); font-weight: 500; }
+.status-good { color: var(--good); font-size: 13px; }
+.footer { margin-top: 40px; font-size: 12px; color: var(--text-muted); }
+</style>
+</head>
+<body>
+<div class="viz-root">
+  <h1>Ghostfleet run report</h1>
+  <p class="subtitle">1 nodes · 1 pods · snapshot <code>2026-07-19T06:59:32Z</code></p>
+
+  <h2>Cluster shape</h2>
+  <div class="kpi-row">
+    <div class="stat-tile"><div class="stat-label">Nodes</div><div class="stat-value">1</div></div>
+    <div class="stat-tile"><div class="stat-label">Pods</div><div class="stat-value">1</div></div>
+    <div class="stat-tile"><div class="stat-label">etcd DB size</div><div class="stat-value">0.5<span class="stat-unit">MB</span></div></div>
+    <div class="stat-tile"><div class="stat-label">Scheduler throughput</div><div class="stat-value">0.0<span class="stat-unit">pods/s (5m avg)</span></div></div>
+    <div class="stat-tile"><div class="stat-label">Scheduling e2e p99</div><div class="stat-value">0.010<span class="stat-unit">s</span></div></div>
+  </div>
+
+  <h2>API request p99 latency by verb</h2>
+  <div class="card">
+    
+      <div class="bar-row">
+        <span class="bar-label">PUT</span>
+        <div class="bar-track"><div class="bar-fill" style="width:100%"></div></div>
+        <span class="bar-value">24.77 ms</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">LIST</span>
+        <div class="bar-track"><div class="bar-fill" style="width:19.98546511627907%"></div></div>
+        <span class="bar-value">4.95 ms</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">DELETE</span>
+        <div class="bar-track"><div class="bar-fill" style="width:0%"></div></div>
+        <span class="bar-value">no data</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">APPLY</span>
+        <div class="bar-track"><div class="bar-fill" style="width:0%"></div></div>
+        <span class="bar-value">no data</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">PATCH</span>
+        <div class="bar-track"><div class="bar-fill" style="width:96.35120585701979%"></div></div>
+        <span class="bar-value">23.86 ms</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">GET</span>
+        <div class="bar-track"><div class="bar-fill" style="width:19.98546511627907%"></div></div>
+        <span class="bar-value">4.95 ms</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">POST</span>
+        <div class="bar-track"><div class="bar-fill" style="width:90.54984456473338%"></div></div>
+        <span class="bar-value">22.43 ms</span>
+      </div>
+    <details><summary>Table view</summary>
+      <table><thead><tr><th>Verb</th><th>p99</th></tr></thead><tbody><tr><td>PUT</td><td>24.77 ms</td></tr><tr><td>LIST</td><td>4.95 ms</td></tr><tr><td>DELETE</td><td>no data</td></tr><tr><td>APPLY</td><td>no data</td></tr><tr><td>PATCH</td><td>23.86 ms</td></tr><tr><td>GET</td><td>4.95 ms</td></tr><tr><td>POST</td><td>22.43 ms</td></tr></tbody></table>
+    </details>
+    <p class="stat-label" style="margin-top:10px;">SLO: mutating &lt; 1s · read-only namespaced &lt; 5s · read-only cluster-scoped &lt; 30s</p>
+  </div>
+
+  <h2>etcd request p99 latency by operation</h2>
+  <div class="card">
+    
+      <div class="bar-row">
+        <span class="bar-label">get</span>
+        <div class="bar-track"><div class="bar-fill" style="width:32.8625252590798%"></div></div>
+        <span class="bar-value">4.97 ms</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">list</span>
+        <div class="bar-track"><div class="bar-fill" style="width:32.731075158043495%"></div></div>
+        <span class="bar-value">4.95 ms</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">listWithCount</span>
+        <div class="bar-track"><div class="bar-fill" style="width:32.731075158043495%"></div></div>
+        <span class="bar-value">4.95 ms</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">update</span>
+        <div class="bar-track"><div class="bar-fill" style="width:100%"></div></div>
+        <span class="bar-value">15.12 ms</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">create</span>
+        <div class="bar-track"><div class="bar-fill" style="width:32.731075158043495%"></div></div>
+        <span class="bar-value">4.95 ms</span>
+      </div>
+    <details><summary>Table view</summary>
+      <table><thead><tr><th>Operation</th><th>p99</th></tr></thead><tbody><tr><td>get</td><td>4.97 ms</td></tr><tr><td>list</td><td>4.95 ms</td></tr><tr><td>listWithCount</td><td>4.95 ms</td></tr><tr><td>update</td><td>15.12 ms</td></tr><tr><td>create</td><td>4.95 ms</td></tr></tbody></table>
+    </details>
+  </div>
+
+  <h2>Priority &amp; Fairness</h2>
+  <div class="card">
+    <p class="status-good">✓ No APF rejections or queue wait observed in this window.</p>
+  </div>
+
+  <h2>Watchers &amp; inflight requests</h2>
+  <div class="card">
+    <p class="stat-label">No watcher data in this window.</p>
+    <details><summary>Inflight requests</summary>
+      <table><thead><tr><th>Kind</th><th>Count</th></tr></thead><tbody><tr><td>mutating</td><td>2</td></tr><tr><td>readOnly</td><td>2</td></tr></tbody></table>
+    </details>
+  </div>
+
+  <p class="footer">Generated from results/20260719-085932/ — raw PromQL snapshots in that folder are the source of truth.</p>
+</div>
+</body>
+</html>

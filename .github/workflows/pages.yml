@@ -1,0 +1,84 @@
+name: Publish results to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "results/**"
+      - "scripts/07-generate-report.sh"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Generate any missing reports
+        run: |
+          set -euo pipefail
+          for dir in results/*/; do
+            [ -f "${dir}cluster-shape.txt" ] || continue
+            [ -f "${dir}report.html" ] || ./scripts/07-generate-report.sh "${dir}"
+          done
+
+      - name: Build site
+        run: |
+          set -euo pipefail
+          SITE=_site
+          rm -rf "${SITE}"
+          mkdir -p "${SITE}"
+
+          {
+            echo "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\">"
+            echo "<title>Ghostfleet results</title>"
+            echo "<style>"
+            echo "body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;max-width:760px;margin:40px auto;padding:0 20px;color:#0b0b0b;background:#f9f9f7}"
+            echo "@media (prefers-color-scheme: dark){body{color:#fff;background:#0d0d0d}a{color:#3987e5}}"
+            echo "a{color:#2a78d6;text-decoration:none} a:hover{text-decoration:underline}"
+            echo "h1{font-size:22px} li{margin:10px 0} .meta{color:#898781;font-size:13px}"
+            echo "</style></head><body>"
+            echo "<h1>Ghostfleet — run reports</h1>"
+            echo "<p class=\"meta\">Auto-generated from results/&lt;timestamp&gt;/ snapshots on every push to main.</p>"
+            echo "<ul>"
+          } > "${SITE}/index.html"
+
+          for dir in $(ls -d results/*/ 2>/dev/null | sort -r); do
+            name="$(basename "${dir}")"
+            [ -f "${dir}report.html" ] || continue
+            mkdir -p "${SITE}/${name}"
+            cp "${dir}report.html" "${SITE}/${name}/index.html"
+            nodes=$(sed -n 's/^nodes: *//p' "${dir}cluster-shape.txt" 2>/dev/null || echo "?")
+            pods=$(sed -n 's/^pods: *//p' "${dir}cluster-shape.txt" 2>/dev/null || echo "?")
+            stamp=$(sed -n 's/^timestamp: *//p' "${dir}cluster-shape.txt" 2>/dev/null || echo "${name}")
+            echo "<li><a href=\"./${name}/\">${name}</a> — ${nodes} nodes, ${pods} pods <span class=\"meta\">(${stamp})</span></li>" >> "${SITE}/index.html"
+          done
+
+          echo "</ul></body></html>" >> "${SITE}/index.html"
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
