@@ -1,5 +1,14 @@
 # Ghost Fleet 🏴‍☠️
 
+I wanted to study limits of Kubernetes on real GPU cluster at super scale like in DGX Data servers with thousands of GPU used by millions of users but that is not possible because
+
+- I have no access to a real prod DGX GPU cluster
+- I cant aford one, obviously :)
+
+So I created this simulation where I spin off my fleet with thousands of nodes with 8 GPU virtual gpu each that can run my GPU load of k8 pods. 
+
+This help me test the limists of Kubernetes at hyper scale like in a real world GPU heavy cluster running workloads similar to CLaud or CHATGPT
+
 > GhostFleet simulates a 1,000 node / 8,000-GPU Kubernetes cluster on a laptop using
 `KWOK`, load it with `ClusterLoader2` and a custom GPU scheduling workload, and measure how the control
 plane behaves.
