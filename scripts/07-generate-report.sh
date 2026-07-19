@@ -12,6 +12,14 @@ PODS=$(sed -n 's/^pods: *//p' "${DIR}/cluster-shape.txt" 2>/dev/null || echo "?"
 STAMP=$(sed -n 's/^timestamp: *//p' "${DIR}/cluster-shape.txt" 2>/dev/null)
 [ -z "${STAMP}" ] && STAMP="$(basename "${DIR}")"
 
+# GPUs: read if the snapshot recorded it (scripts/04-collect-metrics.sh writes
+# this field going forward); older snapshots predate it, so fall back to the
+# project's own 8-GPUs-per-node default (every node manifest so far uses it).
+GPUS=$(sed -n 's/^gpus: *//p' "${DIR}/cluster-shape.txt" 2>/dev/null)
+if [ -z "${GPUS}" ]; then
+  GPUS=$(awk -v n="${NODES}" 'BEGIN{ if (n ~ /^[0-9]+$/) print n*8; else print "—" }')
+fi
+
 # scalar <file> <jq-path-to-value> -> prints value or "—"
 scalar() {
   local file="${DIR}/$1"
@@ -118,6 +126,7 @@ cat > "${OUT}" <<HTML
 <head>
 <meta charset="utf-8">
 <title>Ghostfleet report — ${STAMP}</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👻</text></svg>">
 <style>
 :root {
   color-scheme: light;
@@ -194,19 +203,20 @@ th { color: var(--text-muted); font-weight: 500; }
 </head>
 <body>
 <div class="viz-root">
-  <h1>Ghostfleet run report</h1>
-  <p class="subtitle">${NODES} nodes · ${PODS} pods · snapshot <code>${STAMP}</code></p>
+  <h1>👻 Ghostfleet run report</h1>
+  <p class="subtitle">🖥️ ${NODES} nodes · 🎮 ${GPUS} GPUs · 📦 ${PODS} pods · snapshot <code>${STAMP}</code></p>
 
-  <h2>Cluster shape</h2>
+  <h2>📋 Cluster shape</h2>
   <div class="kpi-row">
-    <div class="stat-tile"><div class="stat-label">Nodes</div><div class="stat-value">${NODES}</div></div>
-    <div class="stat-tile"><div class="stat-label">Pods</div><div class="stat-value">${PODS}</div></div>
-    <div class="stat-tile"><div class="stat-label">etcd DB size</div><div class="stat-value">${ETCD_MB}<span class="stat-unit">MB</span></div></div>
-    <div class="stat-tile"><div class="stat-label">Scheduler throughput</div><div class="stat-value">${SCHED_TPUT_FMT}<span class="stat-unit">pods/s (5m avg)</span></div></div>
-    <div class="stat-tile"><div class="stat-label">Scheduling e2e p99</div><div class="stat-value">${SCHED_E2E_FMT}<span class="stat-unit">s</span></div></div>
+    <div class="stat-tile"><div class="stat-label">🖥️ Nodes</div><div class="stat-value">${NODES}</div></div>
+    <div class="stat-tile"><div class="stat-label">🎮 GPUs</div><div class="stat-value">${GPUS}</div></div>
+    <div class="stat-tile"><div class="stat-label">📦 Pods</div><div class="stat-value">${PODS}</div></div>
+    <div class="stat-tile"><div class="stat-label">🗄️ etcd DB size</div><div class="stat-value">${ETCD_MB}<span class="stat-unit">MB</span></div></div>
+    <div class="stat-tile"><div class="stat-label">⚡ Scheduler throughput</div><div class="stat-value">${SCHED_TPUT_FMT}<span class="stat-unit">pods/s (5m avg)</span></div></div>
+    <div class="stat-tile"><div class="stat-label">⏱️ Scheduling e2e p99</div><div class="stat-value">${SCHED_E2E_FMT}<span class="stat-unit">s</span></div></div>
   </div>
 
-  <h2>API request p99 latency by verb</h2>
+  <h2>🌐 API request p99 latency by verb</h2>
   <div class="card">
     ${api_bars:-<p class=\"stat-label\">No data in this snapshot.</p>}
     <details><summary>Table view</summary>
@@ -215,7 +225,7 @@ th { color: var(--text-muted); font-weight: 500; }
     <p class="stat-label" style="margin-top:10px;">SLO: mutating &lt; 1s · read-only namespaced &lt; 5s · read-only cluster-scoped &lt; 30s</p>
   </div>
 
-  <h2>etcd request p99 latency by operation</h2>
+  <h2>🗄️ etcd request p99 latency by operation</h2>
   <div class="card">
     ${etcd_bars:-<p class=\"stat-label\">No data in this snapshot.</p>}
     <details><summary>Table view</summary>
@@ -223,12 +233,12 @@ th { color: var(--text-muted); font-weight: 500; }
     </details>
   </div>
 
-  <h2>Priority &amp; Fairness</h2>
+  <h2>⚖️ Priority &amp; Fairness</h2>
   <div class="card">
     $( [ "${apf_rejected_count}" = "0" ] && [ "${apf_wait_count}" = "0" ] && echo '<p class="status-good">✓ No APF rejections or queue wait observed in this window.</p>' || echo '<p class="stat-label">See raw JSON: apf_rejected.json, apf_queue_wait_p99.json</p>' )
   </div>
 
-  <h2>Watchers &amp; inflight requests</h2>
+  <h2>👀 Watchers &amp; inflight requests</h2>
   <div class="card">
     $( [ "${watchers_count}" = "0" ] && echo '<p class="stat-label">No watcher data in this window.</p>' || echo "<table><thead><tr><th>Kind</th><th>Watchers</th></tr></thead><tbody>${watchers_table}</tbody></table>" )
     <details><summary>Inflight requests</summary>

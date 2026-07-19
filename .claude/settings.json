@@ -9,7 +9,11 @@
       "Bash(python3 -c \"import yaml\")",
       "Bash(./scripts/08-build-pages.sh /tmp/ghostfleet-site-v3)",
       "Bash(python3 -c ' *)",
-      "Bash(./scripts/08-build-pages.sh /tmp/ghostfleet-site-v4)"
+      "Bash(./scripts/08-build-pages.sh /tmp/ghostfleet-site-v4)",
+      "WebFetch(domain:hiteshsahu.github.io)",
+      "Bash(curl -sL https://hiteshsahu.github.io/ghostfleet/ -o /tmp/live-index.html)",
+      "Bash(echo \"--- exit: $? ---\")",
+      "Bash(curl -sL -o /tmp/live-styles.css -w \"HTTP %{http_code}, content-type: %{content_type}\\\\n\" https://hiteshsahu.github.io/ghostfleet/styles.css)"
     ]
   }
 }

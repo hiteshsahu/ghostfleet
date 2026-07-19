@@ -42,9 +42,21 @@ fmt1() { awk -v v="$1" 'BEGIN{ if (v=="—") print "—"; else printf "%.1f", v 
 fmt3() { awk -v v="$1" 'BEGIN{ if (v=="—") print "—"; else printf "%.3f", v }'; }
 bytes_to_mb() { awk -v b="$1" 'BEGIN{ if (b=="—") print "—"; else printf "%.1f", b/1048576 }'; }
 
+# gpus_for <cluster-shape.txt> <nodes> -> recorded GPU count, or nodes*8 fallback
+# for snapshots taken before 04-collect-metrics.sh started recording it.
+gpus_for() {
+  local shape="$1" nodes="$2" g
+  g=$(sed -n 's/^gpus: *//p' "${shape}" 2>/dev/null)
+  if [ -z "${g}" ]; then
+    awk -v n="${nodes}" 'BEGIN{ if (n ~ /^[0-9]+$/) print n*8; else print "—" }'
+  else
+    echo "${g}"
+  fi
+}
+
 # --- Discover snapshot runs, copy their reports, build the summary table ----
 run_rows() {
-  local dir name nodes pods stamp tput e2e etcd_mb
+  local dir name nodes gpus pods stamp tput e2e etcd_mb
   for dir in $(ls -d results/*/ 2>/dev/null | sort -r); do
     name="$(basename "${dir}")"
     case "${name}" in cl2-*) continue ;; esac
@@ -54,6 +66,7 @@ run_rows() {
     cp "${dir}report.html" "${SITE}/reports/${name}/index.html"
 
     nodes=$(sed -n 's/^nodes: *//p' "${dir}cluster-shape.txt" 2>/dev/null || echo "—")
+    gpus=$(gpus_for "${dir}cluster-shape.txt" "${nodes}")
     pods=$(sed -n 's/^pods: *//p' "${dir}cluster-shape.txt" 2>/dev/null || echo "—")
     stamp=$(sed -n 's/^timestamp: *//p' "${dir}cluster-shape.txt" 2>/dev/null || echo "${name}")
 
@@ -61,8 +74,8 @@ run_rows() {
     e2e=$(fmt3 "$(num "${dir}sched_e2e_p99.json" '.[0].value[1]')")
     etcd_mb=$(bytes_to_mb "$(num "${dir}etcd_db_size_bytes.json" '.[0].value[1]')")
 
-    printf '<tr><td><a href="./reports/%s/">%s</a></td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n' \
-      "${name}" "${name}" "${stamp}" "${nodes}" "${pods}" "${tput}" "${e2e}" "${etcd_mb}"
+    printf '<tr><td><a href="./reports/%s/">%s</a></td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n' \
+      "${name}" "${name}" "${stamp}" "${nodes}" "${gpus}" "${pods}" "${tput}" "${e2e}" "${etcd_mb}"
   done
 }
 
@@ -86,6 +99,7 @@ cl2_rows() {
 # a subshell via $(...), so variables set inside it wouldn't survive) --------
 TOTAL_RUNS=0
 MAX_NODES=0
+MAX_GPUS=0
 MAX_TPUT=0
 LATEST_STAMP="—"
 FIRST=1
@@ -99,9 +113,12 @@ for dir in $(ls -d results/*/ 2>/dev/null | sort -r); do
     FIRST=0
   fi
   nodes=$(sed -n 's/^nodes: *//p' "${dir}cluster-shape.txt" 2>/dev/null || echo 0)
+  gpus=$(gpus_for "${dir}cluster-shape.txt" "${nodes}")
+  [ "${gpus}" = "—" ] && gpus=0
   tput=$(num "${dir}sched_throughput.json" '.[0].value[1]')
   [ "${tput}" = "—" ] && tput=0
   MAX_NODES=$(awk -v a="${MAX_NODES}" -v b="${nodes}" 'BEGIN{print (b+0>a+0)?b:a}')
+  MAX_GPUS=$(awk -v a="${MAX_GPUS}" -v b="${gpus}" 'BEGIN{print (b+0>a+0)?b:a}')
   MAX_TPUT=$(awk -v a="${MAX_TPUT}" -v b="${tput}" 'BEGIN{print (b+0>a+0)?b:a}')
 done
 MAX_TPUT_FMT=$(fmt1 "${MAX_TPUT}")
@@ -111,7 +128,7 @@ CL2_ROWS="$(cl2_rows)"
 
 CL2_SECTION=""
 if [ -n "${CL2_ROWS}" ]; then
-  CL2_SECTION="<h2>ClusterLoader2 runs</h2>
+  CL2_SECTION="<h2>🏁 ClusterLoader2 runs</h2>
 <div class=\"table-wrap\">
 <table>
 <thead><tr><th>Run</th><th>p50</th><th>p90</th><th>p99</th><th>max</th></tr></thead>
@@ -149,17 +166,17 @@ cat > "${SITE}/index.html" <<HTML
     <p class="meta" style="margin-top:12px;">Auto-generated from <code>results/&lt;timestamp&gt;/</code> snapshots on every push to main.</p>
 
     <div class="kpi-row">
-      <div class="stat-tile"><div class="stat-label">Runs tracked</div><div class="stat-value">${TOTAL_RUNS}</div></div>
-      <div class="stat-tile"><div class="stat-label">Latest run</div><div class="stat-value" style="font-size:16px;">${LATEST_STAMP}</div></div>
-      <div class="stat-tile"><div class="stat-label">Largest fleet tested</div><div class="stat-value">${MAX_NODES}<span class="stat-unit">nodes</span></div></div>
-      <div class="stat-tile"><div class="stat-label">Best sched. throughput</div><div class="stat-value">${MAX_TPUT_FMT}<span class="stat-unit">pods/s</span></div></div>
+      <div class="stat-tile"><div class="stat-label">🧪 Runs tracked</div><div class="stat-value">${TOTAL_RUNS}</div></div>
+      <div class="stat-tile"><div class="stat-label">🕐 Latest run</div><div class="stat-value" style="font-size:16px;">${LATEST_STAMP}</div></div>
+      <div class="stat-tile"><div class="stat-label">🖥️ Largest fleet tested</div><div class="stat-value" style="font-size:20px;">${MAX_NODES}<span class="stat-unit">nodes</span> / ${MAX_GPUS}<span class="stat-unit">GPUs</span></div></div>
+      <div class="stat-tile"><div class="stat-label">⚡ Best sched. throughput</div><div class="stat-value">${MAX_TPUT_FMT}<span class="stat-unit">pods/s</span></div></div>
     </div>
   </div>
 
-  <h2>Experiment runs</h2>
+  <h2>🧪 Experiment runs</h2>
   <div class="table-wrap">
   <table>
-    <thead><tr><th>Run</th><th>Timestamp</th><th>Nodes</th><th>Pods</th><th>Sched. throughput (pods/s)</th><th>Sched. e2e p99 (s)</th><th>etcd DB (MB)</th></tr></thead>
+    <thead><tr><th>Run</th><th>Timestamp</th><th>🖥️ Nodes</th><th>🎮 GPUs</th><th>📦 Pods</th><th>⚡ Sched. throughput (pods/s)</th><th>⏱️ Sched. e2e p99 (s)</th><th>🗄️ etcd DB (MB)</th></tr></thead>
     <tbody>
 ${RUN_ROWS}
     </tbody>

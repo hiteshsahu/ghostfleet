@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>Ghostfleet report — 2026-07-19T08:21:02Z</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👻</text></svg>">
 <style>
 :root {
   color-scheme: light;
@@ -79,19 +80,20 @@ th { color: var(--text-muted); font-weight: 500; }
 </head>
 <body>
 <div class="viz-root">
-  <h1>Ghostfleet run report</h1>
-  <p class="subtitle">1000 nodes · 21546 pods · snapshot <code>2026-07-19T08:21:02Z</code></p>
+  <h1>👻 Ghostfleet run report</h1>
+  <p class="subtitle">🖥️ 1000 nodes · 🎮 8000 GPUs · 📦 21546 pods · snapshot <code>2026-07-19T08:21:02Z</code></p>
 
-  <h2>Cluster shape</h2>
+  <h2>📋 Cluster shape</h2>
   <div class="kpi-row">
-    <div class="stat-tile"><div class="stat-label">Nodes</div><div class="stat-value">1000</div></div>
-    <div class="stat-tile"><div class="stat-label">Pods</div><div class="stat-value">21546</div></div>
-    <div class="stat-tile"><div class="stat-label">etcd DB size</div><div class="stat-value">550.9<span class="stat-unit">MB</span></div></div>
-    <div class="stat-tile"><div class="stat-label">Scheduler throughput</div><div class="stat-value">142.8<span class="stat-unit">pods/s (5m avg)</span></div></div>
-    <div class="stat-tile"><div class="stat-label">Scheduling e2e p99</div><div class="stat-value">0.530<span class="stat-unit">s</span></div></div>
+    <div class="stat-tile"><div class="stat-label">🖥️ Nodes</div><div class="stat-value">1000</div></div>
+    <div class="stat-tile"><div class="stat-label">🎮 GPUs</div><div class="stat-value">8000</div></div>
+    <div class="stat-tile"><div class="stat-label">📦 Pods</div><div class="stat-value">21546</div></div>
+    <div class="stat-tile"><div class="stat-label">🗄️ etcd DB size</div><div class="stat-value">550.9<span class="stat-unit">MB</span></div></div>
+    <div class="stat-tile"><div class="stat-label">⚡ Scheduler throughput</div><div class="stat-value">142.8<span class="stat-unit">pods/s (5m avg)</span></div></div>
+    <div class="stat-tile"><div class="stat-label">⏱️ Scheduling e2e p99</div><div class="stat-value">0.530<span class="stat-unit">s</span></div></div>
   </div>
 
-  <h2>API request p99 latency by verb</h2>
+  <h2>🌐 API request p99 latency by verb</h2>
   <div class="card">
     
       <div class="bar-row">
@@ -135,7 +137,7 @@ th { color: var(--text-muted); font-weight: 500; }
     <p class="stat-label" style="margin-top:10px;">SLO: mutating &lt; 1s · read-only namespaced &lt; 5s · read-only cluster-scoped &lt; 30s</p>
   </div>
 
-  <h2>etcd request p99 latency by operation</h2>
+  <h2>🗄️ etcd request p99 latency by operation</h2>
   <div class="card">
     
       <div class="bar-row">
@@ -173,12 +175,12 @@ th { color: var(--text-muted); font-weight: 500; }
     </details>
   </div>
 
-  <h2>Priority &amp; Fairness</h2>
+  <h2>⚖️ Priority &amp; Fairness</h2>
   <div class="card">
     <p class="status-good">✓ No APF rejections or queue wait observed in this window.</p>
   </div>
 
-  <h2>Watchers &amp; inflight requests</h2>
+  <h2>👀 Watchers &amp; inflight requests</h2>
   <div class="card">
     <p class="stat-label">No watcher data in this window.</p>
     <details><summary>Inflight requests</summary>

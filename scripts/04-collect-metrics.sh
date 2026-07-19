@@ -51,6 +51,7 @@ echo ">> Snapshots written to ${DIR}/"
 echo ">> Record cluster shape alongside:"
 {
   echo "nodes: $(kubectl get nodes --no-headers | wc -l | tr -d ' ')"
+  echo "gpus:  $(kubectl get nodes -o json | jq '[.items[].status.allocatable["nvidia.com/gpu"] // "0" | tonumber] | add')"
   echo "pods:  $(kubectl get pods -A --no-headers | wc -l | tr -d ' ')"
   date -u +"timestamp: %Y-%m-%dT%H:%M:%SZ"
 } | tee "${DIR}/cluster-shape.txt"
