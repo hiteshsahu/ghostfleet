@@ -32,7 +32,7 @@ Start by cloning the repo and running the `go` script in the root directory.
 
 ### ⚙️ Install dependencies
 
-Install KWOK, ClusterLoader2, and Prometheus if missing & then create the KWOK cluster.
+Installs kwokctl if missing, then creates the KWOK cluster + Prometheus. (ClusterLoader2 is cloned separately, on first `./go cl2` run.)
 
 Need to run each time after clean up.
 
@@ -88,6 +88,9 @@ Prometheus starts at: http://127.0.0.1:9090 (started by kwokctl).
 # 📸 Dump SLO metrics from Prometheus into results
 ./go snapshot             
 
+# 📄 Render the latest (or a given) snapshot as a self-contained HTML report
+./go report               
+./go report results/20260719-090923
 ```
 
 **Key metrics / PromQL cheat sheet**
@@ -171,13 +174,12 @@ kwok controller
     │
     ├── scripts/            # Helper scripts (optional)
     │
-    ├── results/            # Raw benchmark results (gitignored)
+    ├── results/            # Raw benchmark snapshots (committed on purpose)
     │
     ├── docs/
     │   ├── experiment-design.md
     │   ├── findings.md
-    │   ├── writeup-template.md
-    │   └── architecture.md
+    │   └── writeup-template.md
     │
     ├── go
     ├── README.md

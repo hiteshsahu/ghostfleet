@@ -1,0 +1,47 @@
+[
+  {
+    "metric": {
+      "operation": "get"
+    },
+    "value": [
+      1784444372.346,
+      "0.004969879518072289"
+    ]
+  },
+  {
+    "metric": {
+      "operation": "list"
+    },
+    "value": [
+      1784444372.346,
+      "0.00495"
+    ]
+  },
+  {
+    "metric": {
+      "operation": "listWithCount"
+    },
+    "value": [
+      1784444372.346,
+      "0.00495"
+    ]
+  },
+  {
+    "metric": {
+      "operation": "update"
+    },
+    "value": [
+      1784444372.346,
+      "0.0151232429002063"
+    ]
+  },
+  {
+    "metric": {
+      "operation": "create"
+    },
+    "value": [
+      1784444372.346,
+      "0.00495"
+    ]
+  }
+]

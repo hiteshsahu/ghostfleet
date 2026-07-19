@@ -51,6 +51,7 @@ case ${option} in
   3)
     echo "=== 📊 METRICS & TESTING ==="
     echo "📸  snapshot                          -- Dump SLO metrics from Prometheus into results/<timestamp>/"
+    echo "📄  report [dir]                      -- Render a results/<timestamp>/ snapshot as HTML (default: latest)"
     echo "🧪  cl2                               -- Run ClusterLoader2 density test"
     ;;
 
@@ -189,6 +190,16 @@ function snapshot() {
 function cl2() {
   log "🧪 Running ClusterLoader2 density test..."
   ./scripts/06-run-cl2.sh "$@"
+}
+
+function report() {
+  local dir="${1:-}"
+  if [ -z "${dir}" ]; then
+    dir=$(ls -td results/*/ 2>/dev/null | head -1)
+    [ -z "${dir}" ] && { echo "❌ No results/<timestamp>/ folders found. Run ./go snapshot first."; return 1; }
+  fi
+  log "📄 Rendering report for ${dir}..."
+  ./scripts/07-generate-report.sh "${dir}"
 }
 
 # -----------------------------

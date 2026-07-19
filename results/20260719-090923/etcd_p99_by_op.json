@@ -1,0 +1,56 @@
+[
+  {
+    "metric": {
+      "operation": "list"
+    },
+    "value": [
+      1784444963.569,
+      "0.00495"
+    ]
+  },
+  {
+    "metric": {
+      "operation": "listWithCount"
+    },
+    "value": [
+      1784444963.569,
+      "0.00495"
+    ]
+  },
+  {
+    "metric": {
+      "operation": "update"
+    },
+    "value": [
+      1784444963.569,
+      "0.011548304740449744"
+    ]
+  },
+  {
+    "metric": {
+      "operation": "delete"
+    },
+    "value": [
+      1784444963.569,
+      "NaN"
+    ]
+  },
+  {
+    "metric": {
+      "operation": "create"
+    },
+    "value": [
+      1784444963.569,
+      "0.01566651225771205"
+    ]
+  },
+  {
+    "metric": {
+      "operation": "get"
+    },
+    "value": [
+      1784444963.569,
+      "0.004965468376747831"
+    ]
+  }
+]

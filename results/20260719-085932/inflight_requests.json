@@ -1,0 +1,20 @@
+[
+  {
+    "metric": {
+      "request_kind": "mutating"
+    },
+    "value": [
+      1784444372.427,
+      "2"
+    ]
+  },
+  {
+    "metric": {
+      "request_kind": "readOnly"
+    },
+    "value": [
+      1784444372.427,
+      "2"
+    ]
+  }
+]

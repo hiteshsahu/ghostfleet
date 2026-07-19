@@ -1,0 +1,13 @@
+[
+  {
+    "metric": {
+      "__name__": "etcd_mvcc_db_total_size_in_bytes",
+      "instance": "kwok-ghostfleet-etcd:2379",
+      "job": "etcd"
+    },
+    "value": [
+      1784444372.371,
+      "475136"
+    ]
+  }
+]

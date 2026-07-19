@@ -16,3 +16,5 @@ Each folder contains:
 
 Reproduce: see the experiment matrix in docs/experiment-design.md; snapshots
 must be taken within the 5m rate window after a load phase.
+
+Both podman ps and podman stats are still hanging, which points to the Podman VM itself being resource-exhausted (not just the k8s apiserver) — likely the churn workload's unbounded background kubectl calls (the script spawns 2 unthrottled processes every 2 seconds for 600 seconds with no concurrency cap) piled up faster than the apiserver/etcd could keep up, and the VM is still digging out of that backlog. I'll wait for these checks to return before deciding whether to recover the cluster or let it settle further.

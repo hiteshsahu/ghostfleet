@@ -44,8 +44,7 @@ logs/
 # -----------------------------------------------------------------------------
 # Experiment results
 # -----------------------------------------------------------------------------
-results/*
-!results/.gitkeep
+# Snapshots are committed on purpose — see results/README.md.
 
 artifacts/*
 !artifacts/.gitkeep
