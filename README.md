@@ -64,7 +64,7 @@ You can check dependencies with:
 
 ### ▶️ Run
 
-Start the fleet, load it with pods, and snapshot the metrics.
+Start the fleet, load it with pods.
 
 ```bash
 # 🖥️ Create N fake GPU nodes (8x nvidia.com/gpu each)
@@ -77,15 +77,47 @@ Start the fleet, load it with pods, and snapshot the metrics.
 ./go churn 200 600         # Generate 200 pods/sec churn for 600s(10 minutes) :: experiment D
 ```
 
-Benchmark the control plane with ClusterLoader2, which runs the official Kubernetes density benchmark.
-
-### 🧪 Test & Benchmark
 ```bash
-# 🧪 Official Kubernetes benchmark
-./go cl2                   # Run the ClusterLoader2 density benchmark :: experiment E
 
 # 📡 Check on the fleet
 ./go status                # Control plane health, node/GPU counts, pod scheduling status
+```
+
+OUTPUT:
+
+```bash
+hitesh@Mac ghostfleet % ./go status
+
+📡 Fleet status — cluster: ghostfleet
+
+🐳 Control plane containers:
+  kwok-ghostfleet-etcd: Up 35 minutes
+  kwok-ghostfleet-kube-apiserver: Up 35 minutes
+  kwok-ghostfleet-kwok-controller: Up 35 minutes
+  kwok-ghostfleet-kube-scheduler: Up 35 minutes
+  kwok-ghostfleet-kube-controller-manager: Up 35 minutes
+  kwok-ghostfleet-prometheus: Up 35 minutes
+
+✅ apiserver reachable
+
+🖥️  Nodes:
+  1000/1000 Ready, 8000 GPUs allocatable
+
+📦 Pods:
+  (no gpu-load/churn namespaces yet — run ./go load or ./go churn)
+
+📊 Prometheus: http://127.0.0.1:9090
+
+```
+
+
+### 🧪 Test & Benchmark
+
+Benchmark the control plane with ClusterLoader2, which runs the official Kubernetes density benchmark.
+
+```bash
+# 🧪 Official Kubernetes benchmark
+./go cl2                   # Run the ClusterLoader2 density benchmark :: experiment E
 
 # 🧹 Scuttle the fleet
 ./go clean                 # Delete the cluster and clean up
@@ -96,6 +128,8 @@ Benchmark the control plane with ClusterLoader2, which runs the official Kuberne
 
 Prometheus starts at: http://127.0.0.1:9090 (started by kwokctl).
 
+Snapshot the metrics
+
 ```bash
 # 📸 Dump SLO metrics from Prometheus into results
 ./go snapshot             
@@ -104,6 +138,10 @@ Prometheus starts at: http://127.0.0.1:9090 (started by kwokctl).
 ./go report               
 ./go report results/20260719-090923
 ```
+
+Every push to `main` that touches `results/**` also publishes a browsable index of
+every run's report to GitHub Pages (see `.github/workflows/pages.yml` and
+`scripts/08-build-pages.sh`) — one-time setup: Settings → Pages → Source: GitHub Actions.
 
 **Key metrics / PromQL cheat sheet**
 
@@ -138,7 +176,7 @@ sum(apiserver_current_inflight_requests) by (request_kind)
 ###  [KWOK](https://kwok.sigs.k8s.io/) ::  *K*ubernetes *W*ith*O*ut *K*ubelet
 
 
-Ghost fleet is a Control-plane scale experiments against a simulated GPU cluster, using
+Ghost fleet runs control-plane scale experiments against a simulated GPU cluster, using
 - [KWOK](https://kwok.sigs.k8s.io/)
 - [ClusterLoader2](https://github.com/kubernetes/perf-tests/tree/master/clusterloader2).
 
@@ -184,7 +222,9 @@ kwok controller
     │
     ├── dashboards/         # Grafana dashboards
     │
-    ├── scripts/            # Helper scripts (optional)
+    ├── scripts/            # Imperative execution — setup, scale, load, churn,
+    │   │                   # snapshot, HTML report, CL2 runner, Pages site build
+    │   └── templates/      # Shared HTML/CSS templates for the Pages site
     │
     ├── results/            # Raw benchmark snapshots (committed on purpose)
     │
@@ -192,6 +232,8 @@ kwok controller
     │   ├── experiment-design.md
     │   ├── findings.md
     │   └── writeup-template.md
+    │
+    ├── .github/workflows/  # Publishes results/ to GitHub Pages on every push
     │
     ├── go
     ├── README.md
