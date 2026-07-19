@@ -180,7 +180,7 @@ Ghost fleet runs control-plane scale experiments against a simulated GPU cluster
 - [KWOK](https://kwok.sigs.k8s.io/)
 - [ClusterLoader2](https://github.com/kubernetes/perf-tests/tree/master/clusterloader2).
 
-Hypotheses in [docs/experiment-design.md](./docs/experiment-design.md), numbers in [docs/findings.md](./docs/findings.md), raw data in [./results/](./results/).
+Hypotheses in [docs/experiment-design.md](./docs/experiment-design.md), numbers in [docs/findings.md](./docs/findings.md), narrative write-up in [docs/writeup.md](./docs/writeup.md), raw data in [./results/](./results/).
 
 KWOK runs a **real** kube-apiserver, etcd, scheduler, and controller-manager
 (via `kwokctl`, using Docker or Podman).
@@ -231,6 +231,7 @@ kwok controller
     ├── docs/
     │   ├── experiment-design.md
     │   ├── findings.md
+    │   ├── writeup.md
     │   └── writeup-template.md
     │
     ├── .github/workflows/  # Publishes results/ to GitHub Pages on every push
