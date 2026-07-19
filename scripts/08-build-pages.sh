@@ -16,6 +16,14 @@ rm -rf "${SITE}"
 mkdir -p "${SITE}/reports"
 cp "${TEMPLATE_DIR}/pages-index.css" "${SITE}/styles.css"
 
+# Cache-bust styles.css with a content hash: GitHub Pages serves it at a fixed
+# filename across every rebuild, so browsers that already cached an old copy
+# keep serving it (this is exactly why the site can look fine in incognito —
+# no cache — but stale in a normal browser that visited it before). Appending
+# ?v=<hash of the CSS content> changes the URL only when the CSS actually
+# changes, forcing a fresh fetch without invalidating the cache on unrelated rebuilds.
+CSS_HASH=$(shasum -a 256 "${TEMPLATE_DIR}/pages-index.css" 2>/dev/null | cut -c1-10 || echo "$(date +%s)")
+
 # --- Ensure every snapshot has a rendered report -----------------------------
 for dir in results/*/; do
   [ -f "${dir}cluster-shape.txt" ] || continue
@@ -126,7 +134,7 @@ cat > "${SITE}/index.html" <<HTML
 <title>Ghostfleet results</title>
 <meta name="description" content="Control-plane scale experiment results for a simulated 1,000-node GPU Kubernetes cluster.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👻</text></svg>">
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css?v=${CSS_HASH}">
 </head>
 <body>
 <div class="wrap">
