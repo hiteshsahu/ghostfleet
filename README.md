@@ -25,7 +25,6 @@ See real test results on [GitHub Pages](https://hiteshsahu.github.io/ghostfleet/
 
 [![](./docs/img/dashboard.jpg)](https://hiteshsahu.github.io/ghostfleet/)
 
-
 ### **Why simulate?** 
 
 The scarce skill in AI infrastructure isn't running GPUs
@@ -142,6 +141,9 @@ Snapshot the metrics
 ./go report               
 ./go report results/20260719-090923
 ```
+
+[![](./docs/img/report.jpg)](https://hiteshsahu.github.io/ghostfleet/)
+
 
 Every push to `main` that touches `results/**` also publishes a browsable index of
 every run's report to GitHub Pages (see `.github/workflows/pages.yml` and
