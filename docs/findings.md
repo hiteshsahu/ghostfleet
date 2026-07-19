@@ -2,20 +2,22 @@
 
 Every number below links to a raw snapshot in [results/](../results/). All runs
 are on the same 1,000-node / 8,000-GPU cluster (`./go setup && ./go nodes 1000`,
-Podman runtime, 4 CPU / 8GiB VM) — we did not repeat the matrix at 100/500 nodes
+Podman runtime, 4 CPU / 8GiB VM) 
+
+We did not repeat the matrix at 100/500 nodes
 as originally scoped in [experiment-design.md](experiment-design.md); instead we
 varied workload *shape* at fixed scale (loose vs. tight bin-packing, churn,
 standardized CL2 density) since that's where the interesting control-plane
 behavior showed up.
 
-| Metric                          | Run A/B — 8,000 pods × 1 GPU ([snapshot](../results/20260719-090923/)) | Run C — 1,000 pods × 8 GPU, tight bin-pack ([snapshot](../results/20260719-090446/)) | Run D — churn 200/s × 600s, mid-run ([snapshot](../results/20260719-102054/)) | Run D — churn 200/s × 600s, post-run ([snapshot](../results/20260719-103101/)) |
-|---|---|---|---|---|
-| Scheduling throughput (pods/s, 5m avg) | 28.2 | — *(burst too fast for the 5m window)* | 142.8 | 13.5 |
-| Scheduling e2e p99 (s) | 0.154 | — | 0.530 | **69.7** |
-| API mutating p99 (s) — POST/PUT/PATCH | 0.020 / 0.020 / 0.022 | 0.005 / 0.024 / 0.005 | 0.024 / 0.025 / 0.025 | **60** / 0.30 / 0.76 |
-| etcd p99 write (ms) — update/create | 11.5 / 15.7 | 5.0 / 5.0 | 23.7 / 23.4 | **60,000** / 1.4 |
-| etcd DB size (MB) | 116.6 | 14.5 | 550.9 | *(query timed out)* |
-| Time to schedule full workload | 46s (~173–233 pods/s climbing) | 5s | n/a (sustained load) | n/a |
+| Metric                                 | Run A/B — 8,000 pods × 1 GPU ([snapshot](../results/20260719-090923/)) | Run C — 1,000 pods × 8 GPU, tight bin-pack ([snapshot](../results/20260719-090446/)) | Run D — churn 200/s × 600s, mid-run ([snapshot](../results/20260719-102054/)) | Run D — churn 200/s × 600s, post-run ([snapshot](../results/20260719-103101/)) |
+|----------------------------------------|------------------------------------------------------------------------|--------------------------------------------------------------------------------------|-------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
+| Scheduling throughput (pods/s, 5m avg) | 28.2                                                                   | — *(burst too fast for the 5m window)*                                               | 142.8                                                                         | 13.5                                                                           |
+| Scheduling e2e p99 (s)                 | 0.154                                                                  | —                                                                                    | 0.530                                                                         | **69.7**                                                                       |
+| API mutating p99 (s) — POST/PUT/PATCH  | 0.020 / 0.020 / 0.022                                                  | 0.005 / 0.024 / 0.005                                                                | 0.024 / 0.025 / 0.025                                                         | **60** / 0.30 / 0.76                                                           |
+| etcd p99 write (ms) — update/create    | 11.5 / 15.7                                                            | 5.0 / 5.0                                                                            | 23.7 / 23.4                                                                   | **60,000** / 1.4                                                               |
+| etcd DB size (MB)                      | 116.6                                                                  | 14.5                                                                                 | 550.9                                                                         | *(query timed out)*                                                            |
+| Time to schedule full workload         | 46s (~173–233 pods/s climbing)                                         | 5s                                                                                   | n/a (sustained load)                                                          | n/a                                                                            |
 
 Official ClusterLoader2 cross-check (Run E, [cl2-20260719-105723](../results/cl2-20260719-105723/),
 4,000 pods across 10 namespaces): **SchedulingThroughput p50 188.4 / p90 192.8 /
@@ -78,8 +80,25 @@ above and with the 100–300 pods/s hypothesis in experiment-design.md.
    measurement no-ops; use `./go snapshot` / `results/*/api_p99_by_verb.json`
    for that data instead — SchedulingThroughput and WaitForRunningPods are
    unaffected and gave the cross-check numbers above).
+7. **10,000 idle nodes alone — zero pods — pushed apiserver memory to 72% of
+   an 8GiB VM.** After fixing the `node.alpha.kubernetes.io/ttl` field-manager
+   conflict (see the `manifests/node-template.yaml` comment) and scaling
+   `./go nodes 10000`, `kube-apiserver` settled at **5.99GB / 8.29GB (72.24%)
+   memory**, with etcd (172MB), kwok-controller (854MB), scheduler (296MB),
+   and Prometheus (119MB) on top — total VM memory usage around 90%, with no
+   workload pods running at all. That headroom loss was enough to make
+   leader-election lease renewals miss their deadline: `kube-controller-manager`
+   and `kube-scheduler` both crash-looped (`leaderelection lost/stopped`,
+   `context deadline exceeded`) and the apiserver itself went briefly
+   unreachable — the same failure signature as the churn OOM in finding #3,
+   this time from node *count* alone rather than pod churn. This is a real
+   capacity ceiling for this VM size, not a bug: 1,000 nodes (the size used
+   for every other run in this doc) left comfortable headroom; 10,000 nodes
+   does not. Re-running at 10k with a larger VM (e.g. 16GiB) to get a stable
+   comparison point is a natural next experiment.
 
 ## What this doesn't tell you
+
 KWOK fakes kubelets and pod lifecycles: no device plugin, no DCGM, no real GPU
 allocation, no CNI, no image pulls. These numbers characterize the control
 plane under GPU-shaped scheduling load only. The churn numbers additionally

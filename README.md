@@ -6,12 +6,10 @@
 `KWOK`, load it with `ClusterLoader2` and a custom GPU scheduling workload, and measure how the control
 plane behaves.
 
-See real test results on [GitHub Pages](https://hiteshsahu.github.io/ghostfleet/)
-
 
 > A 1,000s of node GPU cluster with nobody aboard.
 >
-> ![](./docs/img/cover.png)
+> ![Cover](./docs/img/cover.jpg)
 
 
 I wanted to study limits of Kubernetes on real GPU cluster at super scale like in DGX Data servers with thousands of GPU used by millions of users but that is not possible because
@@ -21,7 +19,11 @@ I wanted to study limits of Kubernetes on real GPU cluster at super scale like i
 
 So I created this simulation where I spin off my fleet with thousands of nodes with 8 GPU virtual gpu each that can run my GPU load of k8 pods. 
 
-This help me test the limists of Kubernetes at hyper scale like in a real world GPU heavy cluster running workloads similar to CLaud or CHATGPT
+This helps me test the limits of Kubernetes at hyper scale like in a real world GPU heavy cluster running workloads similar to CLaud or CHATGPT
+
+See real test results on [GitHub Pages](https://hiteshsahu.github.io/ghostfleet/)
+
+[![](./docs/img/dashboard.jpg)](https://hiteshsahu.github.io/ghostfleet/)
 
 
 ### **Why simulate?** 
@@ -34,7 +36,6 @@ without hardware; this repo uses it to run honest, reproducible experiments
 against the upstream scalability SLOs.
 
 ---
-
 
 ## ⚡ Quickstart
 

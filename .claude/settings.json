@@ -4,7 +4,12 @@
       "Bash(chmod +x /tmp/jobs-test.sh)",
       "Bash(bash /tmp/jobs-test.sh)",
       "Bash(chmod +x /Users/hitesh/Documents/GitHub/ghostfleet/scripts/05b-churn-limited.sh)",
-      "Bash(./go churn_limited 50 30 6 5s)"
+      "Bash(./go churn_limited 50 30 6 5s)",
+      "Bash(git remote *)",
+      "Bash(python3 -c \"import yaml\")",
+      "Bash(./scripts/08-build-pages.sh /tmp/ghostfleet-site-v3)",
+      "Bash(python3 -c ' *)",
+      "Bash(./scripts/08-build-pages.sh /tmp/ghostfleet-site-v4)"
     ]
   }
 }

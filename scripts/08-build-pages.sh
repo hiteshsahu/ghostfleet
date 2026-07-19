@@ -53,8 +53,8 @@ run_rows() {
     e2e=$(fmt3 "$(num "${dir}sched_e2e_p99.json" '.[0].value[1]')")
     etcd_mb=$(bytes_to_mb "$(num "${dir}etcd_db_size_bytes.json" '.[0].value[1]')")
 
-    printf '<tr><td><a href="./reports/%s/">%s</a></td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n' \
-      "${name}" "${stamp}" "${nodes}" "${pods}" "${tput}" "${e2e}" "${etcd_mb}"
+    printf '<tr><td><a href="./reports/%s/">%s</a></td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n' \
+      "${name}" "${name}" "${stamp}" "${nodes}" "${pods}" "${tput}" "${e2e}" "${etcd_mb}"
   done
 }
 
@@ -74,43 +74,96 @@ cl2_rows() {
   done
 }
 
+# --- Aggregate stats for the hero KPI row (separate pass — run_rows() runs in
+# a subshell via $(...), so variables set inside it wouldn't survive) --------
+TOTAL_RUNS=0
+MAX_NODES=0
+MAX_TPUT=0
+LATEST_STAMP="—"
+FIRST=1
+for dir in $(ls -d results/*/ 2>/dev/null | sort -r); do
+  name="$(basename "${dir}")"
+  case "${name}" in cl2-*) continue ;; esac
+  [ -f "${dir}report.html" ] || continue
+  TOTAL_RUNS=$((TOTAL_RUNS + 1))
+  if [ "${FIRST}" -eq 1 ]; then
+    LATEST_STAMP=$(sed -n 's/^timestamp: *//p' "${dir}cluster-shape.txt" 2>/dev/null || echo "${name}")
+    FIRST=0
+  fi
+  nodes=$(sed -n 's/^nodes: *//p' "${dir}cluster-shape.txt" 2>/dev/null || echo 0)
+  tput=$(num "${dir}sched_throughput.json" '.[0].value[1]')
+  [ "${tput}" = "—" ] && tput=0
+  MAX_NODES=$(awk -v a="${MAX_NODES}" -v b="${nodes}" 'BEGIN{print (b+0>a+0)?b:a}')
+  MAX_TPUT=$(awk -v a="${MAX_TPUT}" -v b="${tput}" 'BEGIN{print (b+0>a+0)?b:a}')
+done
+MAX_TPUT_FMT=$(fmt1 "${MAX_TPUT}")
+
 RUN_ROWS="$(run_rows)"
 CL2_ROWS="$(cl2_rows)"
 
 CL2_SECTION=""
 if [ -n "${CL2_ROWS}" ]; then
   CL2_SECTION="<h2>ClusterLoader2 runs</h2>
+<div class=\"table-wrap\">
 <table>
 <thead><tr><th>Run</th><th>p50</th><th>p90</th><th>p99</th><th>max</th></tr></thead>
 <tbody>
 ${CL2_ROWS}
 </tbody>
 </table>
-<p class=\"meta\">SchedulingThroughput (pods/s), official upstream framework.</p>"
+</div>
+<p class=\"meta\" style=\"margin-top:8px;\">SchedulingThroughput (pods/s), official upstream framework.</p>"
 fi
+
+GENERATED_AT="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
 
 cat > "${SITE}/index.html" <<HTML
 <!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ghostfleet results</title>
+<meta name="description" content="Control-plane scale experiment results for a simulated 1,000-node GPU Kubernetes cluster.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👻</text></svg>">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <div class="wrap">
-  <h1>Ghostfleet — run reports</h1>
-  <p class="meta">Auto-generated from results/&lt;timestamp&gt;/ snapshots on every push to main.</p>
+  <div class="hero">
+    <div class="hero-top">
+      <div>
+        <div class="brand">🏴‍☠️ Ghostfleet</div>
+        <h1>Control-plane scale experiment results</h1>
+      </div>
+      <a class="repo-link" href="https://github.com/hiteshsahu/ghostfleet">View source on GitHub ↗</a>
+    </div>
+    <p class="meta" style="margin-top:12px;">Auto-generated from <code>results/&lt;timestamp&gt;/</code> snapshots on every push to main.</p>
+
+    <div class="kpi-row">
+      <div class="stat-tile"><div class="stat-label">Runs tracked</div><div class="stat-value">${TOTAL_RUNS}</div></div>
+      <div class="stat-tile"><div class="stat-label">Latest run</div><div class="stat-value" style="font-size:16px;">${LATEST_STAMP}</div></div>
+      <div class="stat-tile"><div class="stat-label">Largest fleet tested</div><div class="stat-value">${MAX_NODES}<span class="stat-unit">nodes</span></div></div>
+      <div class="stat-tile"><div class="stat-label">Best sched. throughput</div><div class="stat-value">${MAX_TPUT_FMT}<span class="stat-unit">pods/s</span></div></div>
+    </div>
+  </div>
 
   <h2>Experiment runs</h2>
+  <div class="table-wrap">
   <table>
     <thead><tr><th>Run</th><th>Timestamp</th><th>Nodes</th><th>Pods</th><th>Sched. throughput (pods/s)</th><th>Sched. e2e p99 (s)</th><th>etcd DB (MB)</th></tr></thead>
     <tbody>
 ${RUN_ROWS}
     </tbody>
   </table>
+  </div>
 
   ${CL2_SECTION}
+
+  <div class="footer">
+    <span>Generated ${GENERATED_AT}</span>
+    <span><a href="https://kwok.sigs.k8s.io/">KWOK</a> + <a href="https://github.com/kubernetes/perf-tests/tree/master/clusterloader2">ClusterLoader2</a> · results are simulated control-plane load, not real GPU hardware</span>
+  </div>
 </div>
 </body>
 </html>
