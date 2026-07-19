@@ -5,8 +5,15 @@ kind: Node
 metadata:
   name: gpu-node-0000
   annotations:
-    kwok.x-k8s.io/node: fake        # kwok controller manages lifecycle/heartbeats
-    node.alpha.kubernetes.io/ttl: "0"
+    kwok.x-k8s.io/node: fake
+    # kwok controller manages lifecycle/heartbeats
+
+    # No node.alpha.kubernetes.io/ttl here on purpose: kube-controller-manager
+    # owns and actively rewrites that field itself (it recalculates a TTL from
+    # live cluster size), so declaring it via our own server-side apply causes
+    # a field-manager conflict the moment the controller updates it — reapplying
+    # this manifest to existing nodes then fails with "conflict with
+    # kube-controller-manager using v1: .metadata.annotations.node.alpha...ttl".
   labels:
     type: kwok
     kubernetes.io/role: agent

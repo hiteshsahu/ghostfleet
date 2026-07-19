@@ -21,7 +21,7 @@ metadata:
   name: gpu-node-$(printf "%04d" "$i")
   annotations:
     kwok.x-k8s.io/node: fake
-    node.alpha.kubernetes.io/ttl: "0"
+    # No node.alpha.kubernetes.io/ttl here on purpose — see manifests/node-template.yaml.
   labels:
     type: kwok
     kubernetes.io/role: agent

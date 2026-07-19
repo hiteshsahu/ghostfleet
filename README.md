@@ -12,7 +12,6 @@ plane behaves.
 
 [![📰 Publish Test Results](https://github.com/hiteshsahu/ghostfleet/actions/workflows/pages.yml/badge.svg)](https://github.com/hiteshsahu/ghostfleet/actions/workflows/pages.yml)
 
-
 I wanted to study limits of Kubernetes on real GPU cluster at super scale like in DGX Data servers with thousands of GPU used by millions of users but that is not possible because
 
 - I have no access to a real prod DGX GPU cluster
@@ -62,7 +61,6 @@ You can check dependencies with:
 # ⚙️ verifies the tool are installed
 ./go check_tools           
 ```
-
 
 ### ▶️ Run
 
