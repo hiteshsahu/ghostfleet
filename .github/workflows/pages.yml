@@ -1,4 +1,4 @@
-name: "📰 Publish Test Results to GitHub Pages"
+name: "📰 Test Results Pages"
 
 on:
   push:
