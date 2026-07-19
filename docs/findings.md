@@ -14,7 +14,7 @@ behavior showed up.
 | Scheduling e2e p99 (s) | 0.154 | — | 0.530 | **69.7** |
 | API mutating p99 (s) — POST/PUT/PATCH | 0.020 / 0.020 / 0.022 | 0.005 / 0.024 / 0.005 | 0.024 / 0.025 / 0.025 | **60** / 0.30 / 0.76 |
 | etcd p99 write (ms) — update/create | 11.5 / 15.7 | 5.0 / 5.0 | 23.7 / 23.4 | **60,000** / 1.4 |
-| etcd DB size (MB) | 116.6 | 14.5 | 577.7 | *(query timed out)* |
+| etcd DB size (MB) | 116.6 | 14.5 | 550.9 | *(query timed out)* |
 | Time to schedule full workload | 46s (~173–233 pods/s climbing) | 5s | n/a (sustained load) | n/a |
 
 Official ClusterLoader2 cross-check (Run E, [cl2-20260719-105723](../results/cl2-20260719-105723/),
