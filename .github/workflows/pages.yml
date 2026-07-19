@@ -1,4 +1,4 @@
-name: "📰 Test Results Pages"
+name: "📰 Publish Test Results"
 
 on:
   push:
